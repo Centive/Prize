@@ -16,6 +16,10 @@ public class Player : MonoBehaviour
     public float myPoints = 0;       
     public bool isGrounded;
     public Role myRole;
+    
+    //obstacle(for dropping)
+     public GameObject obstacle;
+
 
     //Components
     public Rigidbody myRigidbody;
@@ -29,7 +33,12 @@ public class Player : MonoBehaviour
     //Controls
     public KeyCode jump;
     public KeyCode slide;
-
+    
+    //
+    //power-ups
+    private int shield = 0;
+    public GameObject obstacle;
+    
     void Awake()
     {
         DontDestroyOnLoad(this);
@@ -135,6 +144,24 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             StartCoroutine("PowerUp_Speed");
         }
+        if (col.gameObject.tag == "Shield")
+        {
+            shield += 1;
+            Destroy(col.gameObject);
+
+        }
+        if (col.gameObject.tag == "Dropobstacle")
+        {
+            drop_obstacle();
+            Destroy(col.gameObject);
+
+        }
+         if (col.gameObject.tag == "Darkball")
+        {
+            dark_ball();
+            Destroy(col.gameObject);
+
+        }
     }
 
     void OnCollisionEnter(Collision col)
@@ -188,5 +215,23 @@ public class Player : MonoBehaviour
         movSpeed = 0f;
         yield return new WaitForSeconds(5f);
         movSpeed = prevSpeed;
+    }
+    
+    //
+    void drop_obstacle()
+    {
+        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+    }
+
+    void dark_ball()
+    {
+        if (shield != 1)
+        {
+            movSpeed -= 5f;
+        }
+
+        shield = 0;
+
+
     }
 }
