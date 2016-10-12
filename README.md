@@ -16,11 +16,14 @@ Example:
 / 10/11 Wynne
 [player.cs] Small summary of the edited file
 - Added something:
--gameObject obstacle 
--power-up: drop an obstacle function
--power-up: dark ball can slow player speed function
--power-up: double jump function
+-gameObject obstacle ;
+-power-up: drop an obstacle function;
+-power-up: dark ball can slow player speed function;
+-power-up: double jump function;
 
 
 Add indicator.cs
--indicate if player is too far behind other player
+-indicate if player is too far behind other player;
+
+Add darkball.cs
+-its just moving object script
