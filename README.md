@@ -8,6 +8,7 @@ Please use this syntax when push/pulling your version into the master:
 - Deleted something
 
 Example:
+
 [Player.cs] Added controls
 - jump added
 - slide
