@@ -26,12 +26,13 @@ public class Game_Manager : MonoBehaviour
     //variables
     public GameState curState;
     public bool checkChaserWin = false;
-    public bool     isPhase2            = false,
-                    isPhase2Countdown   = false;
-    private float   player1Speed, 
+    public bool     isPhase2 = false,
+                    isPhase1Countdown = false,
+                    isPhase2Countdown = false;
+    private float player1Speed,
                     player2Speed;
 
-    private float   phase1Timer = 6f, 
+    private float phase1Timer = 6f,
                     phase2Timer = 5f;
 
     void Start()
@@ -42,11 +43,11 @@ public class Game_Manager : MonoBehaviour
 
         //init variables
         curState = GameState.Phase1_Pause;
-        player1Speed = players[0].GetComponent<Player>().movSpeed;  //Set player speed
-        player2Speed = players[1].GetComponent<Player>().movSpeed;  //Set player speed
-        
+
         if (players.Length == 2)
         {
+            player1Speed = players[0].GetComponent<Player>().movSpeed;  //Set player speed
+            player2Speed = players[1].GetComponent<Player>().movSpeed;  //Set player speed
             SetControls();
         }
     }
@@ -57,11 +58,6 @@ public class Game_Manager : MonoBehaviour
         {
             GetState();
         }
-        //if (players.Length == 2)
-        //{
-        //    //CheckChaserWin();
-        //    SetPhase2();
-        //}
     }
 
     void GetState()
@@ -78,11 +74,11 @@ public class Game_Manager : MonoBehaviour
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
                         uiInstructions.enabled = false;
-                        isPhase2Countdown = true;
+                        isPhase1Countdown = true;
                     }
 
                     //Start Countdown
-                    if (isPhase2Countdown)
+                    if (isPhase1Countdown)
                     {
                         phase1Timer -= Time.deltaTime;
                         uiCountdown.text = (int)phase1Timer + "";
@@ -93,7 +89,6 @@ public class Game_Manager : MonoBehaviour
                             players[0].GetComponent<Player>().movSpeed = player1Speed;
                             players[1].GetComponent<Player>().movSpeed = player2Speed;
                             curState = GameState.Phase1_Start;
-                            uiCountdown.enabled = false;
                         }
                     }
                     break;
@@ -106,7 +101,26 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Pause:
                 {
+                    //Set players to not move
+                    players[0].GetComponent<Player>().movSpeed = 0;
+                    players[1].GetComponent<Player>().movSpeed = 0;
 
+                    //Start Countdown
+                    if (isPhase2Countdown)
+                    {
+
+                        phase2Timer -= Time.deltaTime;
+                        uiCountdown.text = (int)phase2Timer + "";
+
+                        if (phase2Timer < 0)
+                        {
+                            //Set their speeds
+                            players[0].GetComponent<Player>().movSpeed = player1Speed;
+                            players[1].GetComponent<Player>().movSpeed = player2Speed;
+                            curState = GameState.Phase2_Start;
+                            uiCountdown.enabled = false;
+                        }
+                    }
                     break;
                 }
             case GameState.Phase2_Start:
@@ -116,6 +130,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.End:
                 {
+                    //Tally score
                     break;
                 }
         }
@@ -126,10 +141,6 @@ public class Game_Manager : MonoBehaviour
         //Move the runner 5 units infront of the chaser
         if (isPhase2)
         {
-            //Set players to not move
-            players[0].GetComponent<Player>().movSpeed = 0;
-            players[1].GetComponent<Player>().movSpeed = 0;
-
             //Check for other players
             if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
             {
@@ -143,6 +154,7 @@ public class Game_Manager : MonoBehaviour
 
             //move to next state
             curState = GameState.Phase2_Pause;
+            isPhase2Countdown = true;
             isPhase2 = false;
         }
 
@@ -179,5 +191,5 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
-    
+
 }

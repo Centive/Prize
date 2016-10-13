@@ -233,7 +233,5 @@ public class Player : MonoBehaviour
         }
 
         shield = 0;
-
-
     }
 }
