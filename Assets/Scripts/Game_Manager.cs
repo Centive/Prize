@@ -25,11 +25,14 @@ public class Game_Manager : MonoBehaviour
 
     //variables
     public GameState curState;
-    public bool phase2 = false;
     public bool checkChaserWin = false;
-    private bool StartPhase2 = false;
-    private float player1Speed, player2Speed;
-    private float phase1Timer = 6f, phase2Timer = 5f;
+    public bool     isPhase2            = false,
+                    isPhase2Countdown   = false;
+    private float   player1Speed, 
+                    player2Speed;
+
+    private float   phase1Timer = 6f, 
+                    phase2Timer = 5f;
 
     void Start()
     {
@@ -41,7 +44,7 @@ public class Game_Manager : MonoBehaviour
         curState = GameState.Phase1_Pause;
         player1Speed = players[0].GetComponent<Player>().movSpeed;  //Set player speed
         player2Speed = players[1].GetComponent<Player>().movSpeed;  //Set player speed
-
+        
         if (players.Length == 2)
         {
             SetControls();
@@ -57,7 +60,7 @@ public class Game_Manager : MonoBehaviour
         //if (players.Length == 2)
         //{
         //    //CheckChaserWin();
-        //    CheckPhase2();
+        //    SetPhase2();
         //}
     }
 
@@ -75,17 +78,20 @@ public class Game_Manager : MonoBehaviour
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
                         uiInstructions.enabled = false;
-                        StartPhase2 = true;
+                        isPhase2Countdown = true;
                     }
 
                     //Start Countdown
-                    if (StartPhase2)
+                    if (isPhase2Countdown)
                     {
                         phase1Timer -= Time.deltaTime;
                         uiCountdown.text = (int)phase1Timer + "";
 
                         if (phase1Timer < 0)
                         {
+                            //Set their speeds
+                            players[0].GetComponent<Player>().movSpeed = player1Speed;
+                            players[1].GetComponent<Player>().movSpeed = player2Speed;
                             curState = GameState.Phase1_Start;
                             uiCountdown.enabled = false;
                         }
@@ -94,12 +100,8 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase1_Start:
                 {
-                    //Set their speeds
-                    players[0].GetComponent<Player>().movSpeed = player1Speed;
-                    players[1].GetComponent<Player>().movSpeed = player2Speed;
-
                     //Check for phase 2
-                    CheckPhase2();
+                    SetPhase2();
                     break;
                 }
             case GameState.Phase2_Pause:
@@ -119,14 +121,19 @@ public class Game_Manager : MonoBehaviour
         }
     }
 
-    void CheckPhase2()
+    void SetPhase2()
     {
         //Move the runner 5 units infront of the chaser
-        if (phase2)
+        if (isPhase2)
         {
-            if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)//check if p1 is chaser
+            //Set players to not move
+            players[0].GetComponent<Player>().movSpeed = 0;
+            players[1].GetComponent<Player>().movSpeed = 0;
+
+            //Check for other players
+            if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
             {
-                players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);//move player 2 infront of chaser
+                players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
             if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
@@ -136,7 +143,7 @@ public class Game_Manager : MonoBehaviour
 
             //move to next state
             curState = GameState.Phase2_Pause;
-            phase2 = false;
+            isPhase2 = false;
         }
 
     }
@@ -172,4 +179,5 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
+    
 }
