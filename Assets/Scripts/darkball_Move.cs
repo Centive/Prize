@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class darkball : MonoBehaviour {
+public class darkballMove : MonoBehaviour
+{
 
-	private Vector3 origPoint;
+    private Vector3 origPoint;
     private Vector3 toObject;
     float distance;
     bool reached = false;
@@ -55,7 +56,7 @@ public class darkball : MonoBehaviour {
 
     public void onColliderPoint(Collider other)
     {
-        if (other.gameObject.tag == "ReachPoint")
+        if (other.gameObject.tag == "Reachpoint")
         {
             reached = true;
         }

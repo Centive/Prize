@@ -222,7 +222,7 @@ public class Player : MonoBehaviour
     //
     void drop_obstacle()
     {
-        //Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
     }
 
     void dark_ball()
