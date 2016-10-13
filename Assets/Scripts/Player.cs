@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     }
 
     //Variables
+    public float maxSpeed = 0;
     public float movSpeed = 0;       
     public float jumpPower = 0;      
     public float myPoints = 0;       
@@ -37,7 +38,7 @@ public class Player : MonoBehaviour
     //
     //power-ups
     private int shield = 0;
-    public GameObject obstacle;
+    //public GameObject obstacle;
     
     void Awake()
     {
@@ -47,7 +48,7 @@ public class Player : MonoBehaviour
     //Start
     void Start()
     {
-        //init components
+        //init components/gameobjects
         myRigidbody = GetComponent<Rigidbody>();
         myAnimator = GetComponentInChildren<Animator>();
         myTrail = GetComponent<TrailRenderer>();
@@ -57,6 +58,7 @@ public class Player : MonoBehaviour
         modelSlash.GetComponent<MeshRenderer>().enabled = false;
 
         //Init variables
+        movSpeed = maxSpeed;
         myRole = Role.Runner;
         jump = KeyCode.W;
         slide = KeyCode.S;
@@ -220,7 +222,7 @@ public class Player : MonoBehaviour
     //
     void drop_obstacle()
     {
-        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+        //Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
     }
 
     void dark_ball()

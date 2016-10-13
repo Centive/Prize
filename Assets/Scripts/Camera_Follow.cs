@@ -19,7 +19,7 @@ public class Camera_Follow : MonoBehaviour
     void Update()
     {
         if(players.Length == 2)
-            FindTarget();
+            //FindTarget();
 
         if(target)
         {
