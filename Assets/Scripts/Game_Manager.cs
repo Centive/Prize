@@ -17,6 +17,7 @@ public class Game_Manager : MonoBehaviour
     //Game UI
     public Text         uiCountdown;
     public Text         uiPlayerWarning;
+    public Text         uiGameOver;
     public Image        uiInstructions;
 
     //gameobjects
@@ -34,7 +35,7 @@ public class Game_Manager : MonoBehaviour
                         player2Speed;
 
     private float       phase1Timer         = 6f,
-                        phase2Timer         = 5f;
+                        phase2Timer         = 6f;
 
     void Start()
     {
@@ -83,6 +84,7 @@ public class Game_Manager : MonoBehaviour
                     //Start Countdown
                     if (isPhase1Countdown)
                     {
+                        uiCountdown.gameObject.SetActive(true);
                         phase1Timer -= Time.deltaTime;
                         uiCountdown.text = (int)phase1Timer + "";
 
@@ -91,6 +93,7 @@ public class Game_Manager : MonoBehaviour
                             //Set their speeds
                             players[0].GetComponent<Player>().movSpeed = player1Speed;
                             players[1].GetComponent<Player>().movSpeed = player2Speed;
+                            uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
                         }
                     }
@@ -111,7 +114,7 @@ public class Game_Manager : MonoBehaviour
                     //Start Countdown
                     if (isPhase2Countdown)
                     {
-
+                        uiCountdown.gameObject.SetActive(true);
                         phase2Timer -= Time.deltaTime;
                         uiCountdown.text = (int)phase2Timer + "";
 
@@ -120,8 +123,8 @@ public class Game_Manager : MonoBehaviour
                             //Set their speeds
                             players[0].GetComponent<Player>().movSpeed = player1Speed;
                             players[1].GetComponent<Player>().movSpeed = player2Speed;
+                            uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
-                            uiCountdown.enabled = false;
                         }
                     }
                     break;
@@ -133,7 +136,30 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.End:
                 {
-                    //Tally score
+                    uiGameOver.gameObject.SetActive(true);
+                    if (players[0] != null)
+                    {
+                        if(players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+                        {
+                            uiGameOver.text = "P1 RUNNER WINS";
+                        }
+                        if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
+                        {
+                            uiGameOver.text = "P1 CHASER WINS";
+                        }
+                    }
+
+                    if (players[1] != null)
+                    {
+                        if (players[1].GetComponent<Player>().myRole == Player.Role.Runner)
+                        {
+                            uiGameOver.text = "P2 RUNNER WINS";
+                        }
+                        if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
+                        {
+                            uiGameOver.text = "P2 CHASER WINS";
+                        }
+                    }
                     break;
                 }
         }
@@ -189,7 +215,9 @@ public class Game_Manager : MonoBehaviour
    //Check if a player is too far behind the other player
     void IsPlayerBehind()
     {
-        float distance = Vector3.Distance(players[0].transform.position, players[1].transform.position);
+        float distance = 0;
+        if (players[0] != null && players[1] != null)
+            distance = Vector3.Distance(players[0].transform.position, players[1].transform.position);
 
         if (distance > 15f)
         {
