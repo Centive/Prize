@@ -15,25 +15,26 @@ public class Game_Manager : MonoBehaviour
     }
 
     //Game UI
-    public Text uiCountdown;
-    public Image uiInstructions;
+    public Text         uiCountdown;
+    public Text         uiPlayerWarning;
+    public Image        uiInstructions;
 
     //gameobjects
-    public GameObject prefabPlayer;
+    public GameObject   prefabPlayer;
     public GameObject[] players;
-    private GameObject altar;
+    private GameObject  altar;
 
     //variables
-    public GameState curState;
-    public bool checkChaserWin = false;
-    public bool     isPhase2 = false,
-                    isPhase1Countdown = false,
-                    isPhase2Countdown = false;
-    private float player1Speed,
-                    player2Speed;
+    public GameState    curState;
+    public bool         checkChaserWin      = false;
+    public bool         isPhase2            = false,
+                        isPhase1Countdown   = false,
+                        isPhase2Countdown   = false;
+    private float       player1Speed,
+                        player2Speed;
 
-    private float phase1Timer = 6f,
-                    phase2Timer = 5f;
+    private float       phase1Timer         = 6f,
+                        phase2Timer         = 5f;
 
     void Start()
     {
@@ -43,12 +44,12 @@ public class Game_Manager : MonoBehaviour
 
         //init variables
         curState = GameState.Phase1_Pause;
+        uiInstructions.gameObject.SetActive(true);
 
         if (players.Length == 2)
         {
             player1Speed = players[0].GetComponent<Player>().movSpeed;  //Set player speed
             player2Speed = players[1].GetComponent<Player>().movSpeed;  //Set player speed
-            SetControls();
         }
     }
 
@@ -56,10 +57,12 @@ public class Game_Manager : MonoBehaviour
     {
         if (players.Length == 2)
         {
+            IsPlayerBehind();
             GetState();
         }
     }
 
+    //Find what state in the game were at
     void GetState()
     {
         switch (curState)
@@ -73,7 +76,7 @@ public class Game_Manager : MonoBehaviour
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
-                        uiInstructions.enabled = false;
+                        uiInstructions.gameObject.SetActive(false);
                         isPhase1Countdown = true;
                     }
 
@@ -136,6 +139,7 @@ public class Game_Manager : MonoBehaviour
         }
     }
 
+    //Set positions for phase 2
     void SetPhase2()
     {
         //Move the runner 5 units infront of the chaser
@@ -160,16 +164,6 @@ public class Game_Manager : MonoBehaviour
 
     }
 
-    //Set player controls when the game starts
-    void SetControls()
-    {
-        players[0].GetComponent<Player>().jump = KeyCode.W;
-        players[0].GetComponent<Player>().slide = KeyCode.S;
-
-        players[1].GetComponent<Player>().jump = KeyCode.I;
-        players[1].GetComponent<Player>().slide = KeyCode.K;
-    }
-
     //Available in phase2_start
     void CheckChaserWin()
     {
@@ -192,4 +186,26 @@ public class Game_Manager : MonoBehaviour
         }
     }
 
+   //Check if a player is too far behind the other player
+    void IsPlayerBehind()
+    {
+        float distance = Vector3.Distance(players[0].transform.position, players[1].transform.position);
+
+        if (distance > 15f)
+        {
+            uiPlayerWarning.gameObject.SetActive(true);
+            uiPlayerWarning.text = "Player1 is too far behind! ";
+        }
+
+        if (distance < -15f)
+        {
+            uiPlayerWarning.text = "Player2 is too far behind";
+            uiPlayerWarning.gameObject.SetActive(true);
+        }
+
+        if(distance > -15f && distance < 15f)
+        {
+            uiPlayerWarning.gameObject.SetActive(false);
+        }
+    }
 }

@@ -60,8 +60,6 @@ public class Player : MonoBehaviour
         //Init variables
         movSpeed = maxSpeed;
         myRole = Role.Runner;
-        jump = KeyCode.W;
-        slide = KeyCode.S;
     }
 
     //Ground stuff
@@ -158,11 +156,16 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
 
         }
-         if (col.gameObject.tag == "Darkball")
+        if (col.gameObject.tag == "Darkball")
         {
             dark_ball();
             Destroy(col.gameObject);
 
+        }
+
+        if(col.gameObject.tag == "obSlow")
+        {
+            StartCoroutine(Obstacle_Slow());
         }
     }
 
