@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
         myRole = Role.Runner;
     }
 
-    //Ground stuff
+    //Ground fixes
     void FixedUpdate()
     {
         // Get the velocity
@@ -117,7 +117,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-
+    
     IEnumerator slideCoroutine()
     {
         movSpeed -= 2f;
@@ -131,10 +131,10 @@ public class Player : MonoBehaviour
         //Check if hit coin
         if (col.gameObject.tag == "Coin")
         {
-            Destroy(col.gameObject);
             myPoints++;
 
-            if (myPoints == 5)
+            //Check if player collects 5 coins
+            if ((myPoints % 5) == 0)
                 speedBoost();
         }
 

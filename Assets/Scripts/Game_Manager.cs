@@ -37,6 +37,7 @@ public class Game_Manager : MonoBehaviour
     private float       phase1Timer         = 6f,
                         phase2Timer         = 6f;
 
+    
     void Start()
     {
         //init components/gameobjects
@@ -195,6 +196,7 @@ public class Game_Manager : MonoBehaviour
     {
         if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
         {
+            //Check if the chaser has won
             if (players[0].transform.InverseTransformPoint(players[1].transform.position).x >= 0)
             {
                 curState = GameState.End;
@@ -204,6 +206,7 @@ public class Game_Manager : MonoBehaviour
 
         if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
         {
+            //Check if the chaser has won
             if (players[1].transform.InverseTransformPoint(players[0].transform.position).x >= 0)
             {
                 curState = GameState.End;
@@ -216,21 +219,31 @@ public class Game_Manager : MonoBehaviour
     void IsPlayerBehind()
     {
         float distance = 0;
-        if (players[0] != null && players[1] != null)
-            distance = Vector3.Distance(players[0].transform.position, players[1].transform.position);
+        float pos1 = 0;
+        float pos2 = 0;
 
+        if (players[0] != null && players[1] != null)
+        {
+            pos1 = players[0].transform.position.x;
+            pos2 = players[1].transform.position.x;
+        }
+
+        distance = pos1 - pos2;
+
+        //Check if players are behind
         if (distance > 15f)
         {
             uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = "Player1 is too far behind! ";
+            uiPlayerWarning.text = "Player2 is too far behind! ";
         }
 
         if (distance < -15f)
         {
-            uiPlayerWarning.text = "Player2 is too far behind";
+            uiPlayerWarning.text = "Player1 is too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
 
+        //Disable ui warning if players are within range
         if(distance > -15f && distance < 15f)
         {
             uiPlayerWarning.gameObject.SetActive(false);

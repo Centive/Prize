@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Coin_Rotation : MonoBehaviour
+public class Commons : MonoBehaviour
 {
-    // Use this for initialization
     void Start()
     {
-        
+
+    }
+    
+    void Update()
+    {
+
     }
 
-    // Update is called once per frame
-    void Update()
+    void RotateMe()
     {
         transform.Rotate(0, 50 * Time.deltaTime, 0);
     }
