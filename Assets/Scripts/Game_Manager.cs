@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class Game_Manager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class Game_Manager : MonoBehaviour
     public GameObject   prefabPlayer;
     public GameObject[] players;
     private GameObject  altar;
+    private Transform   halfwayPoint;
 
     //variables
     public GameState    curState;
@@ -43,6 +45,7 @@ public class Game_Manager : MonoBehaviour
         //init components/gameobjects
         players = GameObject.FindGameObjectsWithTag("Player");
         altar = GameObject.FindGameObjectWithTag("Altar");
+        halfwayPoint = altar.transform;
 
         //init variables
         curState = GameState.Phase1_Pause;
@@ -59,6 +62,18 @@ public class Game_Manager : MonoBehaviour
     {
         if (players.Length == 2)
         {
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+            if(curState == GameState.Phase1_Start || curState == GameState.Phase2_Start)
+            {
+                //redo Game
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    SceneManager.LoadScene("Testing_Area");
+                }
+            }
             IsPlayerBehind();
             GetState();
         }
@@ -71,6 +86,7 @@ public class Game_Manager : MonoBehaviour
         {
             case GameState.Phase1_Pause:
                 {
+                    Debug.Log("lol");
                     //Set players to not move
                     players[0].GetComponent<Player>().movSpeed = 0;
                     players[1].GetComponent<Player>().movSpeed = 0;
@@ -161,6 +177,11 @@ public class Game_Manager : MonoBehaviour
                             uiGameOver.text = "P2 CHASER WINS";
                         }
                     }
+                    //redo Game
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        SceneManager.LoadScene("Testing_Area");
+                    }
                     break;
                 }
         }
@@ -175,11 +196,13 @@ public class Game_Manager : MonoBehaviour
             //Check for other players
             if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
             {
+                players[0].transform.position = halfwayPoint.position;
                 players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
             if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
             {
+                players[1].transform.position = halfwayPoint.position;
                 players[0].transform.position = new Vector3(players[1].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
@@ -269,17 +292,6 @@ public class Game_Manager : MonoBehaviour
             isPhase2 = true;
             Destroy(altar);
         }
-
-        //phase 1
-        /*
-         * - Whoever is behind move to phase 2 and make the player whose ahead a chaser
-         */
-        //phase 2
-        /*
-         * - if chaser is behind too much runner wins(for now)
-         */
-
-
 
         //Disable ui warning if players are within range
         if (distance > -15f && distance < 15f)

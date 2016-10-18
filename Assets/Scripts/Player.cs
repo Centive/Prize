@@ -38,13 +38,7 @@ public class Player : MonoBehaviour
     //
     //power-ups
     private int shield = 0;
-    //public GameObject obstacle;
-    
-    void Awake()
-    {
-        DontDestroyOnLoad(this);
-    }
-
+   
     //Start
     void Start()
     {
