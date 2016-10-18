@@ -12,7 +12,9 @@ public class Game_Manager : MonoBehaviour
         Phase1_Start,
         Phase2_Pause,
         Phase2_Start,
-        End
+        End,
+        EndRunner,
+        EndChaser
     }
 
     //Game UI
@@ -74,6 +76,11 @@ public class Game_Manager : MonoBehaviour
                     SceneManager.LoadScene("Testing_Area");
                 }
             }
+            if (players[0] != null && players[0].transform.position.x >= 880f)
+                players[0].GetComponent<Player>().movSpeed = 0;
+            if (players[1] != null && players[0].transform.position.x >= 880f)
+                players[1].GetComponent<Player>().movSpeed = 0;
+
             IsPlayerBehind();
             GetState();
         }
@@ -86,7 +93,6 @@ public class Game_Manager : MonoBehaviour
         {
             case GameState.Phase1_Pause:
                 {
-                    Debug.Log("lol");
                     //Set players to not move
                     players[0].GetComponent<Player>().movSpeed = 0;
                     players[1].GetComponent<Player>().movSpeed = 0;
@@ -149,6 +155,7 @@ public class Game_Manager : MonoBehaviour
             case GameState.Phase2_Start:
                 {
                     CheckChaserWin();
+                    CheckRunnerWin();
                     break;
                 }
             case GameState.End:
@@ -158,11 +165,11 @@ public class Game_Manager : MonoBehaviour
                     {
                         if(players[0].GetComponent<Player>().myRole == Player.Role.Runner)
                         {
-                            uiGameOver.text = "P1 RUNNER WINS";
+                            uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
                         }
                         if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
                         {
-                            uiGameOver.text = "P1 CHASER WINS";
+                            uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
                         }
                     }
 
@@ -170,11 +177,11 @@ public class Game_Manager : MonoBehaviour
                     {
                         if (players[1].GetComponent<Player>().myRole == Player.Role.Runner)
                         {
-                            uiGameOver.text = "P2 RUNNER WINS";
+                            uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
                         }
                         if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
                         {
-                            uiGameOver.text = "P2 CHASER WINS";
+                            uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
                         }
                     }
                     //redo Game
@@ -237,7 +244,26 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
+    void CheckRunnerWin()
+    {
+        if(players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+        {
+            if(players[0].transform.position.x >= 870f)
+            {
+                curState = GameState.End;
+                Destroy(players[1]);
+            }
+        }
 
+        if (players[1].GetComponent<Player>().myRole == Player.Role.Runner)
+        {
+            if (players[1].transform.position.x >= 870f)
+            {
+                curState = GameState.End;
+                Destroy(players[0]);
+            }
+        }
+    }
    //Check if a player is too far behind the other player
     void IsPlayerBehind()
     {

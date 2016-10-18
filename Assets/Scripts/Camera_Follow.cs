@@ -32,7 +32,7 @@ public class Camera_Follow : MonoBehaviour
     }
     void FindTarget()
     {
-        if (players[0] != null && players[1] != null)
+        if (players.Length == 2 && players[0] != null && players[1] != null)
         {
             if (players[0].transform.position.x - players[1].transform.position.x > 0)
             {
@@ -42,9 +42,7 @@ public class Camera_Follow : MonoBehaviour
             {
                 target = players[1].transform;
             }
-        }
-        else
-        {
+
             if (players[0] != null)
             {
                 target = players[0].transform;
@@ -53,6 +51,14 @@ public class Camera_Follow : MonoBehaviour
             {
                 target = players[1].transform;
             }
+        }
+        if(players[0] != null && players[1] == null)
+        {
+            target = players[0].transform;
+        }
+        if (players[1] != null && players[0] == null)
+        {
+            target = players[1].transform;
         }
     }
 }

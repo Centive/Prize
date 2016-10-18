@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
     public KeyCode jump;
     public KeyCode slide;
     
-    //
     //power-ups
     private int shield = 0;
    
@@ -97,18 +96,19 @@ public class Player : MonoBehaviour
                 myAnimator.SetTrigger("Jump");
                 myRigidbody.velocity += Vector3.up * jumpPower;
             }
-            //Slide
-            if (Input.GetKeyDown(slide))
-            {
-                myAnimator.SetTrigger("Slide");
-                myAnimator.SetBool("isSliding", true);
-                StartCoroutine(slideCoroutine());
-            }
-            //Slide
-            if (Input.GetKeyUp(slide))
-            {
-                myAnimator.SetBool("isSliding", false);
-            }
+        }
+
+        //Slide
+        if (Input.GetKeyDown(slide) && !myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
+        {
+            myAnimator.SetTrigger("Slide");
+            myAnimator.SetBool("isSliding", true);
+            StartCoroutine(slideCoroutine());
+        }
+        //Slide
+        if (Input.GetKeyUp(slide))
+        {
+            myAnimator.SetBool("isSliding", false);
         }
     }
     
@@ -175,11 +175,12 @@ public class Player : MonoBehaviour
         if (col.gameObject.tag == "obStun")
         {
             StartCoroutine(Obstacle_Stun());
+            Destroy(col.gameObject, 0.5f);
         }
     }
 
     //Ground checks
-    void OnCollisionEnter(Collision col)
+    void OnCollisionStay(Collision col)
     {
         //Check if grounded
         if (col.gameObject.tag == "Ground")
