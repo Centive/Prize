@@ -230,21 +230,59 @@ public class Game_Manager : MonoBehaviour
 
         distance = pos1 - pos2;
 
-        //Check if players are behind
-        if (distance > 15f)
+        //player 2 handler
+        if (distance > 15f)//warning for chaser/runner that they are lagging behind
         {
             uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = "Player2 is too far behind! ";
+            uiPlayerWarning.text = "Player2 is too far behind!";
+        }
+        if (distance > 23f && curState == GameState.Phase2_Start)
+        {
+            uiPlayerWarning.text = "Player2 has lost! Keep up next time!";
+            Destroy(players[1]);
+            curState = GameState.End;
+        }
+        if (distance > 23f && curState == GameState.Phase1_Start)
+        {
+            players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
+            players[1].GetComponent<Player>().myRole = Player.Role.Runner;
+            isPhase2 = true;
+            Destroy(altar);
         }
 
-        if (distance < -15f)
+        //player 1 handler
+        if (distance < -15f)//warning for chaser/runner that they are lagging beh
         {
             uiPlayerWarning.text = "Player1 is too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
+        if (distance < -23f && curState == GameState.Phase2_Start)
+        {
+            uiPlayerWarning.text = "Player1 has lost! Keep up next time!";
+            Destroy(players[0]);
+            curState = GameState.End;
+        }
+        if (distance < -23f && curState == GameState.Phase1_Start)
+        {
+            players[0].GetComponent<Player>().myRole = Player.Role.Runner;
+            players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
+            isPhase2 = true;
+            Destroy(altar);
+        }
+
+        //phase 1
+        /*
+         * - Whoever is behind move to phase 2 and make the player whose ahead a chaser
+         */
+        //phase 2
+        /*
+         * - if chaser is behind too much runner wins(for now)
+         */
+
+
 
         //Disable ui warning if players are within range
-        if(distance > -15f && distance < 15f)
+        if (distance > -15f && distance < 15f)
         {
             uiPlayerWarning.gameObject.SetActive(false);
         }

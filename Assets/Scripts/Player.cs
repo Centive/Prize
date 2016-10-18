@@ -128,34 +128,41 @@ public class Player : MonoBehaviour
     //Check for obstacles/powerups/coins
     void OnTriggerEnter(Collider col)
     {
-        //Check if hit coin
+        //Coin collecting
         if (col.gameObject.tag == "Coin")
         {
             myPoints++;
-
-            //Check if player collects 5 coins
             if ((myPoints % 5) == 0)
-                speedBoost();
+            {
+                StartCoroutine(PowerUp_Speed());
+            }
         }
 
-        //Check if hit speed powerUp
+        //POWER UPS////////////////////////////////////
+        //speed
         if (col.gameObject.tag == "PowerUp_Speed")
         {
             Destroy(col.gameObject);
-            StartCoroutine("PowerUp_Speed");
+            StartCoroutine(PowerUp_Speed());
         }
+
+        //shield
         if (col.gameObject.tag == "Shield")
         {
             shield += 1;
             Destroy(col.gameObject);
 
         }
+
+        //drop obstacle
         if (col.gameObject.tag == "Dropobstacle")
         {
             drop_obstacle();
             Destroy(col.gameObject);
 
         }
+        
+        //Darkball
         if (col.gameObject.tag == "Darkball")
         {
             dark_ball();
@@ -163,12 +170,21 @@ public class Player : MonoBehaviour
 
         }
 
-        if(col.gameObject.tag == "obSlow")
+        //OBSTACLES////////////////////////////////////
+        //Slow
+        if (col.gameObject.tag == "obSlow")
         {
             StartCoroutine(Obstacle_Slow());
         }
+
+        //Stun
+        if (col.gameObject.tag == "obStun")
+        {
+            StartCoroutine(Obstacle_Stun());
+        }
     }
 
+    //Ground checks
     void OnCollisionEnter(Collision col)
     {
         //Check if grounded
@@ -185,12 +201,21 @@ public class Player : MonoBehaviour
         }
     }
 
-    //POWER UPS
-
-    void speedBoost()
+    //POWER UPS///////////////////////////////////////////////////////
+    //drop obs
+    void drop_obstacle()
     {
-        StartCoroutine(PowerUp_Speed());
-        myPoints = 0;
+        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+    }
+    //dark ball
+    void dark_ball()
+    {
+        if (shield != 1)
+        {
+            movSpeed -= 5f;
+        }
+
+        shield = 0;
     }
 
     //Speed
@@ -202,7 +227,7 @@ public class Player : MonoBehaviour
         movSpeed = prevSpeed;
     }
 
-    //OBSTACLES
+    //OBSTACLES///////////////////////////////////////////////////////
 
     //Slow
     IEnumerator Obstacle_Slow()
@@ -218,23 +243,7 @@ public class Player : MonoBehaviour
     {
         float prevSpeed = movSpeed;
         movSpeed = 0f;
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(0.5f);
         movSpeed = prevSpeed;
-    }
-    
-    //
-    void drop_obstacle()
-    {
-        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
-    }
-
-    void dark_ball()
-    {
-        if (shield != 1)
-        {
-            movSpeed -= 5f;
-        }
-
-        shield = 0;
     }
 }
