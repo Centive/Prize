@@ -71,10 +71,15 @@ public class Camera_Follow : MonoBehaviour
             float distance;
 
            
+               if (players[0].transform.position.x - players[1].transform.position.x > 0)
+            {
                 distance = Mathf.Abs((players[0].transform.position.x - players[1].transform.position.x) / 2);
 
                 target.position = new Vector3(distance, players[0].transform.position.y, 0);
                 target = players[0].transform;
+
+
+            }
 
             
             if (players[0] != null)
