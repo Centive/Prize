@@ -30,7 +30,8 @@ public class Camera_Follow : MonoBehaviour
         }
         
     }
-    void FindTarget()
+    //old code
+  /*  void FindTarget()
     {
         if (players.Length == 2 && players[0] != null && players[1] != null)
         {
@@ -60,5 +61,39 @@ public class Camera_Follow : MonoBehaviour
         {
             target = players[1].transform;
         }
+    }*/
+    
+    //camera follow the middle of 2 players
+        void FindTarget()
+    {
+        if (players.Length == 2 && players[0] != null && players[1] != null)
+        {
+            float distance;
+
+           
+                distance = Mathf.Abs((players[0].transform.position.x - players[1].transform.position.x) / 2);
+
+                target.position = new Vector3(distance, players[0].transform.position.y, 0);
+                target = players[0].transform;
+
+            
+            if (players[0] != null)
+            {
+                target = players[0].transform;
+            }
+            else if (players[1] != null)
+            {
+                target = players[1].transform;
+            }
+        }
+        if (players[0] != null && players[1] == null)
+        {
+            target = players[0].transform;
+        }
+        if (players[1] != null && players[0] == null)
+        {
+            target = players[1].transform;
+        }
     }
+
 }
