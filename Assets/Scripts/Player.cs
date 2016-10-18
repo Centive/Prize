@@ -12,14 +12,11 @@ public class Player : MonoBehaviour
 
     //Variables
     public float maxSpeed = 0;
-    public float movSpeed = 0;       
-    public float jumpPower = 0;      
-    public float myPoints = 0;       
+    public float movSpeed = 0;
+    public float jumpPower = 0;
+    public float myPoints = 0;
     public bool isGrounded;
     public Role myRole;
-    
-    //obstacle(for dropping)
-     public GameObject obstacle;
 
 
     //Components
@@ -34,10 +31,17 @@ public class Player : MonoBehaviour
     //Controls
     public KeyCode jump;
     public KeyCode slide;
-    
+
+    public KeyCode throwDarkBall;
+    public KeyCode dropObstacleKey;
+
     //power-ups
     private int shield = 0;
-   
+    private int dropObstacle = 0;
+    private int ball = 0;
+    public GameObject ballPrefab;
+    public GameObject obstacle;
+
     //Start
     void Start()
     {
@@ -110,8 +114,32 @@ public class Player : MonoBehaviour
         {
             myAnimator.SetBool("isSliding", false);
         }
+
+        if (Input.GetKeyDown(throwDarkBall))
+        {
+            // if (myRole ==Role.Chaser)
+            // {
+            if (ball > 0)
+            {
+                dark_ball();
+                ball--;
+
+            }
+            // }
+
+
+        }
+        if (Input.GetKeyDown(dropObstacleKey))
+        {
+            if (dropObstacle > 0)
+            {
+                drop_obstacle();
+                dropObstacle--;
+            }
+
+        }
     }
-    
+
     IEnumerator slideCoroutine()
     {
         movSpeed -= 2f;
@@ -148,34 +176,52 @@ public class Player : MonoBehaviour
 
         }
 
-        //drop obstacle
-        if (col.gameObject.tag == "Dropobstacle")
-        {
-            drop_obstacle();
-            Destroy(col.gameObject);
 
-        }
-        
-        //Darkball
-        if (col.gameObject.tag == "Darkball")
-        {
-            dark_ball();
-            Destroy(col.gameObject);
 
-        }
 
         //OBSTACLES////////////////////////////////////
         //Slow
         if (col.gameObject.tag == "obSlow")
         {
-            StartCoroutine(Obstacle_Slow());
+            if (shield == 0)
+            {
+                StartCoroutine(Obstacle_Slow());
+            }
+            shield -= 1;
+
         }
 
         //Stun
         if (col.gameObject.tag == "obStun")
+
         {
-            StartCoroutine(Obstacle_Stun());
-            Destroy(col.gameObject, 0.5f);
+            if (shield == 0)
+            {
+                StartCoroutine(Obstacle_Stun());
+                Destroy(col.gameObject, 0.5f);
+            }
+            shield -= 1;
+        }
+
+        //Power-ups////////////////////////////////////
+
+        if (col.gameObject.tag == "Dropobstacle")
+        {
+            dropObstacle++;
+            Destroy(col.gameObject);
+
+        }
+        if (col.gameObject.tag == "Darkball")
+        {
+                      
+                ball++;
+               
+                Destroy(col.gameObject);
+            if (ballPrefab.transform.position == this.transform.position)
+            {
+                movSpeed -= 2f;
+            }
+
         }
     }
 
@@ -202,15 +248,11 @@ public class Player : MonoBehaviour
     {
         Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
     }
-    //dark ball
+
     void dark_ball()
     {
-        if (shield != 1)
-        {
-            movSpeed -= 5f;
-        }
+        Instantiate(ballPrefab, new Vector3(transform.position.x + 3f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
 
-        shield = 0;
     }
 
     //Speed
@@ -241,4 +283,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         movSpeed = prevSpeed;
     }
+
+
+
 }
