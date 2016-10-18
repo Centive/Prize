@@ -68,7 +68,7 @@ public class Game_Manager : MonoBehaviour
             {
                 Application.Quit();
             }
-            if(curState == GameState.Phase1_Start || curState == GameState.Phase2_Start)
+            if(curState == GameState.End)
             {
                 //redo Game
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -76,10 +76,6 @@ public class Game_Manager : MonoBehaviour
                     SceneManager.LoadScene("Testing_Area");
                 }
             }
-            if (players[0] != null && players[0].transform.position.x >= 880f)
-                players[0].GetComponent<Player>().movSpeed = 0;
-            if (players[1] != null && players[0].transform.position.x >= 880f)
-                players[1].GetComponent<Player>().movSpeed = 0;
 
             IsPlayerBehind();
             GetState();
@@ -189,6 +185,14 @@ public class Game_Manager : MonoBehaviour
                     {
                         SceneManager.LoadScene("Testing_Area");
                     }
+
+                    //Runner stop at end
+                    if(players[0] != null)
+                        if (players[0].transform.position.x >= 880f)
+                            players[0].GetComponent<Player>().movSpeed = 0;
+                    if (players[1] != null)
+                        if (players[0].transform.position.x >= 880f)
+                            players[1].GetComponent<Player>().movSpeed = 0;
                     break;
                 }
         }
@@ -264,6 +268,7 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
+    
    //Check if a player is too far behind the other player
     void IsPlayerBehind()
     {
@@ -278,8 +283,27 @@ public class Game_Manager : MonoBehaviour
         }
 
         distance = pos1 - pos2;
+        
+        //check if falling behind p1
+        if (distance < -15f)//warning for chaser/runner that they are lagging beh
+        {
+            uiPlayerWarning.text = "Player1 is too far behind!";
+            uiPlayerWarning.gameObject.SetActive(true);
+        }
+        if (distance < -23f && curState == GameState.Phase2_Start)
+        {
+            curState = GameState.End;
+            Destroy(players[0]);
+        }
+        if (distance < -23f && curState == GameState.Phase1_Start)
+        {
+            players[0].GetComponent<Player>().myRole = Player.Role.Runner;
+            players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
+            isPhase2 = true;
+            Destroy(altar);
+        }
 
-        //player 2 handler
+        //check if falling behind p2
         if (distance > 15f)//warning for chaser/runner that they are lagging behind
         {
             uiPlayerWarning.gameObject.SetActive(true);
@@ -287,9 +311,8 @@ public class Game_Manager : MonoBehaviour
         }
         if (distance > 23f && curState == GameState.Phase2_Start)
         {
-            uiPlayerWarning.text = "Player2 has lost! Keep up next time!";
-            Destroy(players[1]);
             curState = GameState.End;
+            Destroy(players[1]);
         }
         if (distance > 23f && curState == GameState.Phase1_Start)
         {
@@ -299,25 +322,20 @@ public class Game_Manager : MonoBehaviour
             Destroy(altar);
         }
 
-        //player 1 handler
-        if (distance < -15f)//warning for chaser/runner that they are lagging beh
-        {
-            uiPlayerWarning.text = "Player1 is too far behind!";
-            uiPlayerWarning.gameObject.SetActive(true);
-        }
-        if (distance < -23f && curState == GameState.Phase2_Start)
-        {
-            uiPlayerWarning.text = "Player1 has lost! Keep up next time!";
-            Destroy(players[0]);
-            curState = GameState.End;
-        }
-        if (distance < -23f && curState == GameState.Phase1_Start)
-        {
-            players[0].GetComponent<Player>().myRole = Player.Role.Runner;
-            players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
-            isPhase2 = true;
-            Destroy(altar);
-        }
+        //Check for fall from pit p1
+        if(players[0] != null)
+            if (players[0].transform.position.y <= -5f)
+            {
+                curState = GameState.End;
+                Destroy(players[0]);
+            }
+        //Check for fall from pitp2
+        if(players[1] != null)
+            if (players[1].transform.position.y <= -5f)
+            {
+                curState = GameState.End;
+                Destroy(players[1]);
+            }
 
         //Disable ui warning if players are within range
         if (distance > -15f && distance < 15f)

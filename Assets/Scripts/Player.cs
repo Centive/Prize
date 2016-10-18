@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
         RaycastHit hit;
 
         // Check if the body's current velocity will result in a collision
-        if (myRigidbody.SweepTest(horizontalMove, out hit, distance) && hit.transform.gameObject.tag == "Obstacle")
+        if (myRigidbody.SweepTest(horizontalMove, out hit, distance) && hit.transform.gameObject.tag == "Wall")
         {
             // If so, stop the movement
             myRigidbody.velocity = new Vector3(0, myRigidbody.velocity.y, 0);
