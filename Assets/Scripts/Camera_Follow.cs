@@ -7,12 +7,15 @@ public class Camera_Follow : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     public Transform target;
     private Camera myCamera;
+    private GameObject gameManager;
     public GameObject[] players;
 
     void Start()
     {
+        //init components/game objects
         myCamera = GetComponent<Camera>();
         players = GameObject.FindGameObjectsWithTag("Player");
+        gameManager = GameObject.Find("Game_Manager");
     }
 
     // Update is called once per frame
@@ -20,7 +23,7 @@ public class Camera_Follow : MonoBehaviour
     {
         FindTarget();
 
-        if(target)
+        if (target)
         {
             Vector3 point = myCamera.WorldToViewportPoint(target.position);
             Vector3 delta = target.position - myCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.4f, point.z)); //(new Vector3(0.5, 0.5, point.z));
@@ -28,37 +31,32 @@ public class Camera_Follow : MonoBehaviour
 
             transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
         }
-        
     }
     void FindTarget()
     {
+        float distance;
+
         if (players.Length == 2 && players[0] != null && players[1] != null)
         {
             if (players[0].transform.position.x - players[1].transform.position.x > 0)
             {
-                target = players[0].transform;
-            }
-            else
-            {
-                target = players[1].transform;
-            }
+                distance = Mathf.Abs((players[0].transform.position.x - players[1].transform.position.x) / 2);
 
-            if (players[0] != null)
-            {
-                target = players[0].transform;
-            }
-            else if (players[1] != null)
-            {
-                target = players[1].transform;
+                target.position = new Vector3(distance, players[0].transform.position.y, 0);
             }
         }
-        if(players[0] != null && players[1] == null)
-        {
-            target = players[0].transform;
-        }
-        if (players[1] != null && players[0] == null)
-        {
-            target = players[1].transform;
-        }
+
+        if (gameManager != null)
+            if (gameManager.GetComponent<Game_Manager>().curState == Game_Manager.GameState.End)
+            {
+                if (players[0] != null)
+                {
+                    target = players[0].transform;
+                }
+                if (players[1] != null)
+                {
+                    target = players[1].transform;
+                }
+            }
     }
 }

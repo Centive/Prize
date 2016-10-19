@@ -18,30 +18,30 @@ public class Game_Manager : MonoBehaviour
     }
 
     //Game UI
-    public Text         uiCountdown;
-    public Text         uiPlayerWarning;
-    public Text         uiGameOver;
-    public Image        uiInstructions;
+    public Text uiCountdown;
+    public Text uiPlayerWarning;
+    public Text uiGameOver;
+    public Image uiInstructions;
 
     //gameobjects
-    public GameObject   prefabPlayer;
+    public GameObject prefabPlayer;
     public GameObject[] players;
-    private GameObject  altar;
-    private Transform   halfwayPoint;
+    private GameObject altar;
+    private Transform halfwayPoint;
 
     //variables
-    public GameState    curState;
-    public bool         checkChaserWin      = false;
-    public bool         isPhase2            = false,
-                        isPhase1Countdown   = false,
-                        isPhase2Countdown   = false;
-    private float       player1Speed,
-                        player2Speed;
+    public GameState curState;
+    public bool checkChaserWin      = false;
+    public bool isPhase2            = false,
+                isPhase1Countdown   = false,
+                isPhase2Countdown   = false;
+    private float player1Speed,
+                  player2Speed;
 
-    private float       phase1Timer         = 6f,
-                        phase2Timer         = 6f;
+    private float phase1Timer = 6f,
+                  phase2Timer = 6f;
 
-    
+
     void Start()
     {
         //init components/gameobjects
@@ -64,11 +64,11 @@ public class Game_Manager : MonoBehaviour
     {
         if (players.Length == 2)
         {
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Application.Quit();
             }
-            if(curState == GameState.End)
+            if (curState == GameState.End)
             {
                 //redo Game
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -76,7 +76,6 @@ public class Game_Manager : MonoBehaviour
                     SceneManager.LoadScene("Testing_Area");
                 }
             }
-
             IsPlayerBehind();
             GetState();
         }
@@ -159,7 +158,7 @@ public class Game_Manager : MonoBehaviour
                     uiGameOver.gameObject.SetActive(true);
                     if (players[0] != null)
                     {
-                        if(players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+                        if (players[0].GetComponent<Player>().myRole == Player.Role.Runner)
                         {
                             uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
                         }
@@ -187,11 +186,11 @@ public class Game_Manager : MonoBehaviour
                     }
 
                     //Runner stop at end
-                    if(players[0] != null)
+                    if (players[0] != null)
                         if (players[0].transform.position.x >= 880f)
                             players[0].GetComponent<Player>().movSpeed = 0;
                     if (players[1] != null)
-                        if (players[0].transform.position.x >= 880f)
+                        if (players[1].transform.position.x >= 880f)
                             players[1].GetComponent<Player>().movSpeed = 0;
                     break;
                 }
@@ -250,9 +249,9 @@ public class Game_Manager : MonoBehaviour
     }
     void CheckRunnerWin()
     {
-        if(players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+        if (players[0].GetComponent<Player>().myRole == Player.Role.Runner)
         {
-            if(players[0].transform.position.x >= 870f)
+            if (players[0].transform.position.x >= 870f)
             {
                 curState = GameState.End;
                 Destroy(players[1]);
@@ -268,8 +267,8 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
-    
-   //Check if a player is too far behind the other player
+
+    //Check if a player is too far behind the other player
     void IsPlayerBehind()
     {
         float distance = 0;
@@ -283,19 +282,19 @@ public class Game_Manager : MonoBehaviour
         }
 
         distance = pos1 - pos2;
-        
+
         //check if falling behind p1
         if (distance < -15f)//warning for chaser/runner that they are lagging beh
         {
             uiPlayerWarning.text = "Player1 is too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
-        if (distance < -23f && curState == GameState.Phase2_Start)
+        if (distance < -23f && curState == GameState.Phase2_Start)//check if p1 fell too far behind as a chaser. Then p2 is the winner
         {
             curState = GameState.End;
             Destroy(players[0]);
         }
-        if (distance < -23f && curState == GameState.Phase1_Start)
+        if (distance < -23f && curState == GameState.Phase1_Start)//p1 fell behind too far. So p2 is now runner(move to phase 2)
         {
             players[0].GetComponent<Player>().myRole = Player.Role.Runner;
             players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
@@ -309,12 +308,12 @@ public class Game_Manager : MonoBehaviour
             uiPlayerWarning.gameObject.SetActive(true);
             uiPlayerWarning.text = "Player2 is too far behind!";
         }
-        if (distance > 23f && curState == GameState.Phase2_Start)
+        if (distance > 23f && curState == GameState.Phase2_Start)//check if p1 fell too far behind as a chaser. Then p2 is the winner
         {
             curState = GameState.End;
             Destroy(players[1]);
         }
-        if (distance > 23f && curState == GameState.Phase1_Start)
+        if (distance > 23f && curState == GameState.Phase1_Start)//p2 fell behind too far. So p1 is now runner(move to phase 2)
         {
             players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
             players[1].GetComponent<Player>().myRole = Player.Role.Runner;
@@ -322,15 +321,15 @@ public class Game_Manager : MonoBehaviour
             Destroy(altar);
         }
 
-        //Check for fall from pit p1
-        if(players[0] != null)
+        //Check if p1 fell from a pit
+        if (players[0] != null)
             if (players[0].transform.position.y <= -5f)
             {
                 curState = GameState.End;
                 Destroy(players[0]);
             }
-        //Check for fall from pitp2
-        if(players[1] != null)
+        //Check if p1 fell from a pit
+        if (players[1] != null)
             if (players[1].transform.position.y <= -5f)
             {
                 curState = GameState.End;

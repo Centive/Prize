@@ -10,14 +10,25 @@ public class Player : MonoBehaviour
         Chaser
     }
 
+    //
+    public enum PowerUp_State
+    {
+        None,
+        Darkball,
+        DropObstacle,
+        Shield,
+        Speed
+    }
+
     //Variables
+    private float slope;
     public float maxSpeed = 0;
     public float movSpeed = 0;
     public float jumpPower = 0;
     public float myPoints = 0;
     public bool isGrounded;
     public Role myRole;
-
+    public PowerUp_State myPowerUp;
 
     //Components
     public Rigidbody myRigidbody;
@@ -27,20 +38,17 @@ public class Player : MonoBehaviour
     //Models
     public GameObject modelDagger;
     public GameObject modelSlash;
+    public GameObject prefabShield_PowerUp;
 
     //Controls
     public KeyCode jump;
     public KeyCode slide;
-
-    public KeyCode throwDarkBall;
-    public KeyCode dropObstacleKey;
+    public KeyCode usePowerUp;
 
     //power-ups
-    private int shield = 0;
-    private int dropObstacle = 0;
-    private int ball = 0;
-    public GameObject ballPrefab;
-    public GameObject obstacle;
+    private bool isShielded = false;
+    public GameObject darkBallPrefab;
+    public GameObject dropObstaclePrefab;
 
     //Start
     void Start()
@@ -57,6 +65,7 @@ public class Player : MonoBehaviour
         //Init variables
         movSpeed = maxSpeed;
         myRole = Role.Runner;
+        myPowerUp = PowerUp_State.None;
     }
 
     //Ground fixes
@@ -79,10 +88,29 @@ public class Player : MonoBehaviour
             myRigidbody.velocity = new Vector3(0, myRigidbody.velocity.y, 0);
         }
     }
-
+    //void Cheating()
+    //{
+    //    //if (Input.GetKeyDown(KeyCode.Alpha1))
+    //    //{
+    //    //    myPowerUp = PowerUp_State.Darkball;
+    //    //}
+    //    //if (Input.GetKeyDown(KeyCode.Alpha2))
+    //    //{
+    //    //    myPowerUp = PowerUp_State.DropObstacle;
+    //    //}
+    //    //if (Input.GetKeyDown(KeyCode.Alpha3))
+    //    //{
+    //    //    myPowerUp = PowerUp_State.Shield;
+    //    //}
+    //    //if (Input.GetKeyDown(KeyCode.Alpha4))
+    //    //{
+    //    //    myPowerUp = PowerUp_State.Speed;
+    //    //}
+    //}
     //Update
     void Update()
     {
+        //Cheating();
         Controls();
     }
 
@@ -114,29 +142,32 @@ public class Player : MonoBehaviour
         {
             myAnimator.SetBool("isSliding", false);
         }
-
-        if (Input.GetKeyDown(throwDarkBall))
+        //Use powerup
+        if (Input.GetKeyDown(usePowerUp))
         {
-            // if (myRole ==Role.Chaser)
-            // {
-            if (ball > 0)
+            switch (myPowerUp)
             {
-                dark_ball();
-                ball--;
-
+                case PowerUp_State.Darkball:
+                    {
+                        PowerUpDropObstacle();
+                        break;
+                    }
+                case PowerUp_State.DropObstacle:
+                    {
+                        PowerUpDarkBall();
+                        break;
+                    }
+                case PowerUp_State.Shield:
+                    {
+                        StartCoroutine(PowerUpShield());
+                        break;
+                    }
+                case PowerUp_State.Speed:
+                    {
+                        StartCoroutine(PowerUpSpeed());
+                        break;
+                    }
             }
-            // }
-
-
-        }
-        if (Input.GetKeyDown(dropObstacleKey))
-        {
-            if (dropObstacle > 0)
-            {
-                drop_obstacle();
-                dropObstacle--;
-            }
-
         }
     }
 
@@ -150,78 +181,25 @@ public class Player : MonoBehaviour
     //Check for obstacles/powerups/coins
     void OnTriggerEnter(Collider col)
     {
-        //Coin collecting
-        if (col.gameObject.tag == "Coin")
-        {
-            myPoints++;
-            if ((myPoints % 5) == 0)
-            {
-                StartCoroutine(PowerUp_Speed());
-            }
-        }
-
-        //POWER UPS////////////////////////////////////
-        //speed
-        if (col.gameObject.tag == "PowerUp_Speed")
-        {
-            Destroy(col.gameObject);
-            StartCoroutine(PowerUp_Speed());
-        }
-
-        //shield
-        if (col.gameObject.tag == "Shield")
-        {
-            shield += 1;
-            Destroy(col.gameObject);
-
-        }
-
-
-
-
         //OBSTACLES////////////////////////////////////
         //Slow
         if (col.gameObject.tag == "obSlow")
         {
-            if (shield == 0)
+            if (!isShielded)
             {
                 StartCoroutine(Obstacle_Slow());
             }
-            shield -= 1;
-
         }
 
         //Stun
         if (col.gameObject.tag == "obStun")
-
         {
-            if (shield == 0)
+            if (!isShielded)
             {
                 StartCoroutine(Obstacle_Stun());
                 Destroy(col.gameObject, 0.5f);
             }
-            shield -= 1;
-        }
-
-        //Power-ups////////////////////////////////////
-
-        if (col.gameObject.tag == "Dropobstacle")
-        {
-            dropObstacle++;
             Destroy(col.gameObject);
-
-        }
-        if (col.gameObject.tag == "Darkball")
-        {
-                      
-                ball++;
-               
-                Destroy(col.gameObject);
-            if (ballPrefab.transform.position == this.transform.position)
-            {
-                movSpeed -= 2f;
-            }
-
         }
     }
 
@@ -244,26 +222,33 @@ public class Player : MonoBehaviour
 
     //POWER UPS///////////////////////////////////////////////////////
     //drop obs
-    void drop_obstacle()
+    void PowerUpDropObstacle()
     {
-        Instantiate(obstacle, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+        Instantiate(dropObstaclePrefab, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+        myPowerUp = PowerUp_State.None;
     }
-
-    void dark_ball()
+    void PowerUpDarkBall()
     {
-        Instantiate(ballPrefab, new Vector3(transform.position.x + 3f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
-
+        Instantiate(darkBallPrefab, new Vector3(transform.position.x + 3f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
+        myPowerUp = PowerUp_State.None;
     }
 
     //Speed
-    IEnumerator PowerUp_Speed()
+    IEnumerator PowerUpSpeed()
     {
         float prevSpeed = movSpeed;
         movSpeed += 5f;
         yield return new WaitForSeconds(2f);
         movSpeed = prevSpeed;
+        myPowerUp = PowerUp_State.None;
     }
-
+    IEnumerator PowerUpShield()
+    {
+        isShielded = true;
+        yield return new WaitForSeconds(2f);
+        isShielded = false;
+        myPowerUp = PowerUp_State.None;
+    }
     //OBSTACLES///////////////////////////////////////////////////////
 
     //Slow
@@ -283,7 +268,4 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         movSpeed = prevSpeed;
     }
-
-
-
 }
