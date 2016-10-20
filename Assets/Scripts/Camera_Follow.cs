@@ -38,15 +38,18 @@ public class Camera_Follow : MonoBehaviour
         float distance = 0;
         float pos1 = 0;
         float pos2 = 0;
-        
-        if (players[0] != null && players[1] != null)
-        {
-            pos1 = players[0].transform.position.x;
-            pos2 = players[1].transform.position.x;
-        }
-        distance = pos1 - pos2;
 
-        if (distance < -1)
+        if (players.Length == 2)
+        { 
+            if (players[0] != null && players[1] != null)
+            {
+                pos1 = players[0].transform.position.x;
+                pos2 = players[1].transform.position.x;
+            }
+        }
+    distance = pos1 - pos2;
+
+        if (distance< -1)
         {
             target = players[1].transform;
         }

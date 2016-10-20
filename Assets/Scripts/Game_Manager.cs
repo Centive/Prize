@@ -55,8 +55,8 @@ public class Game_Manager : MonoBehaviour
 
         if (players.Length == 2)
         {
-            player1Speed = players[0].GetComponent<Player>().movSpeed;  //Set player speed
-            player2Speed = players[1].GetComponent<Player>().movSpeed;  //Set player speed
+            player1Speed = players[0].GetComponent<PlayerController>().movSpeed;  //Set player speed
+            player2Speed = players[1].GetComponent<PlayerController>().movSpeed;  //Set player speed
         }
     }
 
@@ -89,8 +89,8 @@ public class Game_Manager : MonoBehaviour
             case GameState.Phase1_Pause:
                 {
                     //Set players to not move
-                    players[0].GetComponent<Player>().movSpeed = 0;
-                    players[1].GetComponent<Player>().movSpeed = 0;
+                    players[0].GetComponent<PlayerController>().movSpeed = 0;
+                    players[1].GetComponent<PlayerController>().movSpeed = 0;
 
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space))
@@ -109,8 +109,8 @@ public class Game_Manager : MonoBehaviour
                         if (phase1Timer < 0)
                         {
                             //Set their speeds
-                            players[0].GetComponent<Player>().movSpeed = player1Speed;
-                            players[1].GetComponent<Player>().movSpeed = player2Speed;
+                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
                         }
@@ -126,8 +126,8 @@ public class Game_Manager : MonoBehaviour
             case GameState.Phase2_Pause:
                 {
                     //Set players to not move
-                    players[0].GetComponent<Player>().movSpeed = 0;
-                    players[1].GetComponent<Player>().movSpeed = 0;
+                    players[0].GetComponent<PlayerController>().movSpeed = 0;
+                    players[1].GetComponent<PlayerController>().movSpeed = 0;
 
                     //Start Countdown
                     if (isPhase2Countdown)
@@ -139,8 +139,8 @@ public class Game_Manager : MonoBehaviour
                         if (phase2Timer < 0)
                         {
                             //Set their speeds
-                            players[0].GetComponent<Player>().movSpeed = player1Speed;
-                            players[1].GetComponent<Player>().movSpeed = player2Speed;
+                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
                         }
@@ -159,11 +159,11 @@ public class Game_Manager : MonoBehaviour
                     uiGameOver.gameObject.SetActive(true);
                     if (players[0] != null)
                     {
-                        if (players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
                         {
                             uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
                         }
-                        if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
+                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                         {
                             uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
                         }
@@ -171,11 +171,11 @@ public class Game_Manager : MonoBehaviour
 
                     if (players[1] != null)
                     {
-                        if (players[1].GetComponent<Player>().myRole == Player.Role.Runner)
+                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
                         {
                             uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
                         }
-                        if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
+                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                         {
                             uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
                         }
@@ -189,10 +189,10 @@ public class Game_Manager : MonoBehaviour
                     //Runner stop at end
                     if (players[0] != null)
                         if (players[0].transform.position.x >= 880f)
-                            players[0].GetComponent<Player>().movSpeed = 0;
+                            players[0].GetComponent<PlayerController>().movSpeed = 0;
                     if (players[1] != null)
                         if (players[1].transform.position.x >= 880f)
-                            players[1].GetComponent<Player>().movSpeed = 0;
+                            players[1].GetComponent<PlayerController>().movSpeed = 0;
                     break;
                 }
         }
@@ -205,13 +205,13 @@ public class Game_Manager : MonoBehaviour
         if (isPhase2)
         {
             //Check for other players
-            if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
+            if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
                 players[0].transform.position = halfwayPoint.position;
                 players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
-            if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
+            if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
                 players[1].transform.position = halfwayPoint.position;
                 players[0].transform.position = new Vector3(players[1].transform.position.x + 5f, 0.0f, 0.0f);
@@ -228,7 +228,7 @@ public class Game_Manager : MonoBehaviour
     //Available in phase2_start
     void CheckChaserWin()
     {
-        if (players[0].GetComponent<Player>().myRole == Player.Role.Chaser)
+        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
         {
             //Check if the chaser has won
             if (players[0].transform.InverseTransformPoint(players[1].transform.position).x >= 0)
@@ -238,7 +238,7 @@ public class Game_Manager : MonoBehaviour
             }
         }
 
-        if (players[1].GetComponent<Player>().myRole == Player.Role.Chaser)
+        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
         {
             //Check if the chaser has won
             if (players[1].transform.InverseTransformPoint(players[0].transform.position).x >= 0)
@@ -250,7 +250,7 @@ public class Game_Manager : MonoBehaviour
     }
     void CheckRunnerWin()
     {
-        if (players[0].GetComponent<Player>().myRole == Player.Role.Runner)
+        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
         {
             if (players[0].transform.position.x >= 870f)
             {
@@ -259,7 +259,7 @@ public class Game_Manager : MonoBehaviour
             }
         }
 
-        if (players[1].GetComponent<Player>().myRole == Player.Role.Runner)
+        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
         {
             if (players[1].transform.position.x >= 870f)
             {
@@ -297,22 +297,20 @@ public class Game_Manager : MonoBehaviour
     {
         //Warnings
 
-        //Player 1 Check
+        //PlayerHandler 1 Check
         if (distance < -32f)
         {
             uiPlayerWarning.text = "Player1 don't fall too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
 
-        //Player 2 Check
+        //PlayerHandler 2 Check
         if (distance > 32f)
         {
             uiPlayerWarning.gameObject.SetActive(true);
             uiPlayerWarning.text = "Player2 don't fall too far behind!";
         }
-
-        Debug.Log(distance);
-
+        
         //////////////////////////////////////////////////////////////////////
         //Check if players have fell behind too much
         switch (curState)
@@ -321,16 +319,16 @@ public class Game_Manager : MonoBehaviour
                 {
                     if (distance < -42f)//if player 1 has fell behind
                     {
-                        players[0].GetComponent<Player>().myRole = Player.Role.Runner;
-                        players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
+                        players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
+                        players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
                         isPhase2 = true;
                         Destroy(altar);
                     }
         
                     if (distance > 42f)//if player 2 has fell behind
                     {
-                        players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
-                        players[1].GetComponent<Player>().myRole = Player.Role.Runner;
+                        players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
+                        players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
                         isPhase2 = true;
                         Destroy(altar);
                     }

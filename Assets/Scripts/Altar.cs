@@ -22,15 +22,15 @@ public class Altar : MonoBehaviour
 
                 if (col.gameObject == players[0])
                 {
-                    players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
-                    players[1].GetComponent<Player>().myRole = Player.Role.Runner;
+                    players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
+                    players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
                     gameManager.GetComponent<Game_Manager>().isPhase2 = true;
                     //Destroy(this.gameObject);
                 }
                 if (col.gameObject == players[1])
                 {
-                    players[0].GetComponent<Player>().myRole = Player.Role.Runner;
-                    players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
+                    players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
+                    players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
                     gameManager.GetComponent<Game_Manager>().isPhase2 = true;
                     //Destroy(this.gameObject);
                 }

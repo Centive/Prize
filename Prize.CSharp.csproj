@@ -69,16 +69,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\PlayerPointsText.cs" />
     <Compile Include="Assets\Scripts\Altar.cs" />
     <Compile Include="Assets\Scripts\Camera_Follow.cs" />
     <Compile Include="Assets\Scripts\Coin.cs" />
     <Compile Include="Assets\Scripts\Commons.cs" />
     <Compile Include="Assets\Scripts\DarkBall.cs" />
     <Compile Include="Assets\Scripts\Game_Manager.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\PlayerHandler.cs" />
     <Compile Include="Assets\Scripts\Player_Shield.cs" />
     <Compile Include="Assets\Scripts\platform_up_down.cs" />
+    <Compile Include="Assets\testChar.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
