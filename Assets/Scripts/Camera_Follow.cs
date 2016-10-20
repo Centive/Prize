@@ -33,82 +33,26 @@ public class Camera_Follow : MonoBehaviour
         }
     }
     //old code
-  /*  void FindTarget()
+    void FindTarget()
     {
-        float distance;
-
-        if (players.Length == 2 && players[0] != null && players[1] != null)
+        float distance = 0;
+        float pos1 = 0;
+        float pos2 = 0;
+        
+        if (players[0] != null && players[1] != null)
         {
-            if (players[0].transform.position.x - players[1].transform.position.x > 0)
-            {
-                distance = Mathf.Abs((players[0].transform.position.x - players[1].transform.position.x) / 2);
+            pos1 = players[0].transform.position.x;
+            pos2 = players[1].transform.position.x;
+        }
+        distance = pos1 - pos2;
 
-                target.position = new Vector3(distance, players[0].transform.position.y, 0);
-            }
-        }
-
-        if (gameManager != null)
-            if (gameManager.GetComponent<Game_Manager>().curState == Game_Manager.GameState.End)
-            {
-                if (players[0] != null)
-                {
-                    target = players[0].transform;
-                }
-                if (players[1] != null)
-                {
-                    target = players[1].transform;
-                }
-            }
-<<<<<<< HEAD
-=======
-        }
-        if(players[0] != null && players[1] == null)
-        {
-            target = players[0].transform;
-        }
-        if (players[1] != null && players[0] == null)
+        if (distance < -1)
         {
             target = players[1].transform;
         }
-    }*/
-    
-    //camera follow the middle of 2 players
-        void FindTarget()
-    {
-        if (players.Length == 2 && players[0] != null && players[1] != null)
-        {
-            float distance;
-
-           
-               if (players[0].transform.position.x - players[1].transform.position.x > 0)
-            {
-                distance = Mathf.Abs((players[0].transform.position.x - players[1].transform.position.x) / 2);
-
-                target.position = new Vector3(distance, players[0].transform.position.y, 0);
-                target = players[0].transform;
-
-
-            }
-
-            
-            if (players[0] != null)
-            {
-                target = players[0].transform;
-            }
-            else if (players[1] != null)
-            {
-                target = players[1].transform;
-            }
-        }
-        if (players[0] != null && players[1] == null)
+        else if (distance > 0)
         {
             target = players[0].transform;
         }
-        if (players[1] != null && players[0] == null)
-        {
-            target = players[1].transform;
-        }
->>>>>>> origin/master
     }
-
 }
