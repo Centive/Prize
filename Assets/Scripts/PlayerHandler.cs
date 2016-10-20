@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class PlayerHandler : MonoBehaviour
@@ -21,28 +21,28 @@ public class PlayerHandler : MonoBehaviour
     }
 
     //Variables
-    public bool                 isShielded          = false;
-    public bool                 rewardIsActive      = false;
-    public int                  obAvoids            = 0;
-    public int                  maxAvoids           = 3;
-    public int                  curAvoids = 0;
-    public float                maxRewardCountdown;
-    public float                rewardCountdown;
-    public Role                 myRole;
-    public PowerUp_State        myPowerUp;
+    public bool isShielded = false;
+    public bool rewardIsActive = false;
+    public int obAvoids = 0;
+    public int maxAvoids = 3;
+    public int curAvoids = 0;
+    public float maxRewardCountdown;
+    public float rewardCountdown;
+    public Role myRole;
+    public PowerUp_State myPowerUp;
 
     //Components
-    private Rigidbody           myRigidbody;
-    private PlayerController    player;
+    private Rigidbody myRigidbody;
+    private PlayerController player;
 
     void Start()
     {
         //init components
-        myRigidbody         = GetComponent<Rigidbody>();
-        player              = GetComponent<PlayerController>();
+        myRigidbody = GetComponent<Rigidbody>();
+        player = GetComponent<PlayerController>();
 
         //init variables
-        rewardCountdown     = maxRewardCountdown;
+        rewardCountdown = maxRewardCountdown;
     }
 
     //Wall collide detection
@@ -73,7 +73,7 @@ public class PlayerHandler : MonoBehaviour
 
     void CheckPowerUpReward()
     {
-        if(rewardIsActive)
+        if (rewardIsActive)
         {
             rewardCountdown -= Time.deltaTime;
             if (rewardCountdown < 0)
@@ -129,15 +129,98 @@ public class PlayerHandler : MonoBehaviour
             if (rewardIsActive)
             {
                 curAvoids++;//increment the number of avoided obstacles
-                if(curAvoids >= maxAvoids)//if the number of avoided obstacles have past the max
+                if (curAvoids >= maxAvoids)//if the number of avoided obstacles have past the max
                 {
                     myPowerUp = (PowerUp_State)Random.Range(1, 4);
 
                     //reset
-                    rewardIsActive  = false;
+                    rewardIsActive = false;
                 }
             }
         }
+
+        //platform(ground) slow and fast
+        if (col.gameObject.tag == "Platformslow")
+
+        {
+            if (player.movSpeed > 0f)
+
+            {
+
+                player.movSpeed -= 3f;
+            }
+        }
+
+        if (col.gameObject.tag == "Platformreallyslow")
+        {
+            if (player.movSpeed > 0f)
+
+            {
+
+                player.movSpeed -= 5f;
+            }
+        }
+        if (col.gameObject.tag == "Platformfast")
+        {
+            if (player.movSpeed > 0f)
+
+            {
+
+                player.movSpeed += 3f;
+            }
+        }
+        if (col.gameObject.tag == "Platformreallyfast")
+        {
+            if (player.movSpeed > 0f)
+
+            {
+
+                player.movSpeed += 5f;
+            }
+        }
+
+
+    }
+
+    //Incline
+    void OnCollisionEnter(Collision col)
+    {
+
+        if (col.gameObject.tag == "Incline")
+        {
+            inclineslowfast(col.gameObject);
+        }
+    }
+
+    void inclineslowfast(GameObject incline)
+    {
+
+
+        Vector3 angleInclie = incline.transform.eulerAngles;
+        Debug.Log(angleInclie);
+        if (angleInclie.z >= 45f && angleInclie.z <= 315f)
+        {
+            player.movSpeed -= 4f;
+            Debug.Log("slow");
+            Debug.Log(player.movSpeed);
+        }
+        else if (angleInclie.z >= 315f)
+        {
+           player.movSpeed += 4f;
+            Debug.Log("fast");
+            Debug.Log(player.movSpeed);
+        }
+
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject.tag == "Incline")
+        {
+            player.movSpeed = 15f;
+
+        }
+
     }
 
     //Obstacles
