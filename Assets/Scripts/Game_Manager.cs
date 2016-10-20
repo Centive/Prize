@@ -8,6 +8,7 @@ public class Game_Manager : MonoBehaviour
 {
     public enum GameState
     {
+        None,
         Phase1_Pause,
         Phase1_Start,
         Phase2_Pause,
@@ -18,28 +19,27 @@ public class Game_Manager : MonoBehaviour
     }
 
     //Game UI
-    public Text uiCountdown;
-    public Text uiPlayerWarning;
-    public Text uiGameOver;
-    public Image uiInstructions;
+    public Text         uiCountdown;
+    public Text         uiPlayerWarning;
+    public Text         uiGameOver;
+    public Image        uiInstructions;
 
     //gameobjects
-    public GameObject prefabPlayer;
+    public GameObject   prefabPlayer;
     public GameObject[] players;
-    private GameObject altar;
-    private Transform halfwayPoint;
+    private GameObject  altar;
+    private Transform   halfwayPoint;
 
     //variables
-    public GameState curState;
-    public bool checkChaserWin      = false;
-    public bool isPhase2            = false,
-                isPhase1Countdown   = false,
-                isPhase2Countdown   = false;
-    private float player1Speed,
-                  player2Speed;
-
-    private float phase1Timer = 6f,
-                  phase2Timer = 6f;
+    public GameState    curState            = GameState.None;
+    public bool         checkChaserWin      = false;
+    public bool         isPhase2            = false,
+                        isPhase1Countdown   = false,
+                        isPhase2Countdown   = false;
+    private float       player1Speed        = 0,
+                        player2Speed        = 0;
+    private float       phase1Timer         = 6f,
+                        phase2Timer         = 6f;
 
 
     void Start()
@@ -119,8 +119,8 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase1_Start:
                 {
-                    //Check for phase 2
-                    SetPhase2();
+                    CheckDeath();   //Checks if a player died in the level environment
+                    SetPhase2();    //Checks if for phase 2
                     break;
                 }
             case GameState.Phase2_Pause:
@@ -149,6 +149,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Start:
                 {
+                    CheckDeath();   //Checks if a player died in the level environment
                     CheckChaserWin();
                     CheckRunnerWin();
                     break;
@@ -280,66 +281,98 @@ public class Game_Manager : MonoBehaviour
             pos1 = players[0].transform.position.x;
             pos2 = players[1].transform.position.x;
         }
+        
+        distance = pos1 - pos2;             //get distance of the players
 
-        distance = pos1 - pos2;
+        IsPlayerBehindWarnings(distance);   //get warnings
 
-        //check if falling behind p1
-        if (distance < -15f)//warning for chaser/runner that they are lagging beh
-        {
-            uiPlayerWarning.text = "Player1 is too far behind!";
-            uiPlayerWarning.gameObject.SetActive(true);
-        }
-        if (distance < -23f && curState == GameState.Phase2_Start)//check if p1 fell too far behind as a chaser. Then p2 is the winner
-        {
-            curState = GameState.End;
-            Destroy(players[0]);
-        }
-        if (distance < -23f && curState == GameState.Phase1_Start)//p1 fell behind too far. So p2 is now runner(move to phase 2)
-        {
-            players[0].GetComponent<Player>().myRole = Player.Role.Runner;
-            players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
-            isPhase2 = true;
-            Destroy(altar);
-        }
-
-        //check if falling behind p2
-        if (distance > 15f)//warning for chaser/runner that they are lagging behind
-        {
-            uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = "Player2 is too far behind!";
-        }
-        if (distance > 23f && curState == GameState.Phase2_Start)//check if p1 fell too far behind as a chaser. Then p2 is the winner
-        {
-            curState = GameState.End;
-            Destroy(players[1]);
-        }
-        if (distance > 23f && curState == GameState.Phase1_Start)//p2 fell behind too far. So p1 is now runner(move to phase 2)
-        {
-            players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
-            players[1].GetComponent<Player>().myRole = Player.Role.Runner;
-            isPhase2 = true;
-            Destroy(altar);
-        }
-
-        //Check if p1 fell from a pit
-        if (players[0] != null)
-            if (players[0].transform.position.y <= -5f)
-            {
-                curState = GameState.End;
-                Destroy(players[0]);
-            }
-        //Check if p1 fell from a pit
-        if (players[1] != null)
-            if (players[1].transform.position.y <= -5f)
-            {
-                curState = GameState.End;
-                Destroy(players[1]);
-            }
 
         //Disable ui warning if players are within range
         if (distance > -15f && distance < 15f)
         {
             uiPlayerWarning.gameObject.SetActive(false);
+        }
+    }
+    void IsPlayerBehindWarnings(float distance)
+    {
+        //Warnings
+
+        //Player 1 Check
+        if (distance < -32f)
+        {
+            uiPlayerWarning.text = "Player1 don't fall too far behind!";
+            uiPlayerWarning.gameObject.SetActive(true);
+        }
+
+        //Player 2 Check
+        if (distance > 32f)
+        {
+            uiPlayerWarning.gameObject.SetActive(true);
+            uiPlayerWarning.text = "Player2 don't fall too far behind!";
+        }
+
+        Debug.Log(distance);
+
+        //////////////////////////////////////////////////////////////////////
+        //Check if players have fell behind too much
+        switch (curState)
+        {
+            case GameState.Phase1_Start:
+                {
+                    if (distance < -42f)//if player 1 has fell behind
+                    {
+                        players[0].GetComponent<Player>().myRole = Player.Role.Runner;
+                        players[1].GetComponent<Player>().myRole = Player.Role.Chaser;
+                        isPhase2 = true;
+                        Destroy(altar);
+                    }
+        
+                    if (distance > 42f)//if player 2 has fell behind
+                    {
+                        players[0].GetComponent<Player>().myRole = Player.Role.Chaser;
+                        players[1].GetComponent<Player>().myRole = Player.Role.Runner;
+                        isPhase2 = true;
+                        Destroy(altar);
+                    }
+                    break;
+                }
+            case GameState.Phase2_Start:
+                {
+                    if (distance < -42f)//if player 1 has fell behind
+                    {
+                        curState = GameState.End;
+                        Destroy(players[0]);
+                    }
+        
+                    if (distance > 42f)//if player 2 has fell behind
+                    {
+                        curState = GameState.End;
+                        Destroy(players[1]);
+                    }
+                    break;
+                }
+        }
+    }
+
+    //Check if player died from level environments
+    void CheckDeath()
+    {
+        if (players[0] != null)//Check if player 1 has fell from a pit
+        {
+            if (players[0].transform.position.y <= -5f)
+            {
+                curState = GameState.End;
+                Destroy(players[0]);
+            }
+        }
+        
+        if (players[1] != null)//Check if player 2 has fell from a pit
+        {
+            if (players[1].transform.position.y <= -5f)
+            {
+                curState = GameState.End;
+                Destroy(players[1]);
+            }
         }
     }
 }
