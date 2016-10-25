@@ -128,6 +128,7 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = false;
         }
+        
     }
 
     //POWER UPS///////////////////////////////////////////////////////

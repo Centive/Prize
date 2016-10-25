@@ -15,7 +15,7 @@ public class platform_up_down : MonoBehaviour
     {
         origPoint = transform.position;
         platformRigidBody = GetComponent<Rigidbody>();
-        toObject.y = transform.position.y + 5.0f;    // position 
+        toObject.y = transform.position.y + 9.0f;    // position 
         toObject.x = transform.position.x;
 
     }

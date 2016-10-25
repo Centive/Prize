@@ -35,6 +35,19 @@ public class PlayerHandler : MonoBehaviour
     private Rigidbody myRigidbody;
     private PlayerController player;
 
+    //platform
+    private Transform NormalPlatform;
+    float timer = 0f;
+
+
+    //Sounds
+    public AudioClip slopeDown;
+    public AudioClip slopeUp;
+
+    private AudioSource slopeDownsource;
+    private AudioSource slopeUpsource;
+
+
     void Start()
     {
         //init components
@@ -43,6 +56,10 @@ public class PlayerHandler : MonoBehaviour
 
         //init variables
         rewardCountdown = maxRewardCountdown;
+
+        //sounds
+        slopeDownsource = GetComponent<AudioSource>();
+
     }
 
     //Wall collide detection
@@ -64,6 +81,8 @@ public class PlayerHandler : MonoBehaviour
             // If so, stop the movement
             myRigidbody.velocity = new Vector3(0, myRigidbody.velocity.y, 0);
         }
+
+
     }
 
     void Update()
@@ -146,6 +165,8 @@ public class PlayerHandler : MonoBehaviour
             if (player.movSpeed > 0f)
 
             {
+                Debug.Log("slow");
+
 
                 player.movSpeed -= 3f;
             }
@@ -156,6 +177,8 @@ public class PlayerHandler : MonoBehaviour
             if (player.movSpeed > 0f)
 
             {
+                Debug.Log("slow");
+
 
                 player.movSpeed -= 5f;
             }
@@ -165,6 +188,8 @@ public class PlayerHandler : MonoBehaviour
             if (player.movSpeed > 0f)
 
             {
+                Debug.Log("fast");
+
 
                 player.movSpeed += 3f;
             }
@@ -174,14 +199,34 @@ public class PlayerHandler : MonoBehaviour
             if (player.movSpeed > 0f)
 
             {
+                Debug.Log("fast");
+
 
                 player.movSpeed += 5f;
             }
         }
 
-
+   
     }
 
+
+   //stay on platform
+    void OnCollisionStay(Collision col)
+    {
+     
+        if (col.gameObject.tag == "Platformmoving")
+
+        {
+           
+            if (timer <=2f)
+            {
+                this.transform.position = col.transform.position;
+            }
+        }
+    }
+
+   
+   
     //Incline
     void OnCollisionEnter(Collision col)
     {
@@ -206,7 +251,9 @@ public class PlayerHandler : MonoBehaviour
         }
         else if (angleInclie.z >= 315f)
         {
-           player.movSpeed += 4f;
+            slopeDownsource.PlayOneShot(slopeDown, 0.5f);
+
+            player.movSpeed += 4f;
             Debug.Log("fast");
             Debug.Log(player.movSpeed);
         }

@@ -357,7 +357,7 @@ public class Game_Manager : MonoBehaviour
     {
         if (players[0] != null)//Check if player 1 has fell from a pit
         {
-            if (players[0].transform.position.y <= -5f)
+            if (players[0].transform.position.y <= -10f)
             {
                 curState = GameState.End;
                 Destroy(players[0]);
@@ -366,7 +366,7 @@ public class Game_Manager : MonoBehaviour
         
         if (players[1] != null)//Check if player 2 has fell from a pit
         {
-            if (players[1].transform.position.y <= -5f)
+            if (players[1].transform.position.y <= -10f)
             {
                 curState = GameState.End;
                 Destroy(players[1]);
