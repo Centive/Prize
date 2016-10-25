@@ -168,7 +168,7 @@ public class PlayerHandler : MonoBehaviour
                 Debug.Log("slow");
 
 
-                player.movSpeed -= 3f;
+                player.movSpeed -= 1f;
             }
         }
 
@@ -246,16 +246,16 @@ public class PlayerHandler : MonoBehaviour
         if (angleInclie.z >= 45f && angleInclie.z <= 315f)
         {
             player.movSpeed -= 4f;
-            Debug.Log("slow");
-            Debug.Log(player.movSpeed);
+            //Debug.Log("slow");
+            //Debug.Log(player.movSpeed);
         }
         else if (angleInclie.z >= 315f)
         {
             slopeDownsource.PlayOneShot(slopeDown, 0.5f);
 
             player.movSpeed += 4f;
-            Debug.Log("fast");
-            Debug.Log(player.movSpeed);
+            //Debug.Log("fast");
+            //Debug.Log(player.movSpeed);
         }
 
     }
