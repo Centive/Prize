@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         myAnimator      = GetComponentInChildren<Animator>();
         myTrail         = GetComponent<TrailRenderer>();
         playerHandler   = GetComponent<PlayerHandler>();
-        powerAudios     = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
+        powerAudios     = GameObject.Find("PlayerPowerUpSFX").GetComponents<AudioSource>();
 
         //init audio clips
         darkballSfx         = powerAudios[0];

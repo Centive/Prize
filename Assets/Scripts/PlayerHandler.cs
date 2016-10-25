@@ -21,41 +21,49 @@ public class PlayerHandler : MonoBehaviour
     }
 
     //Variables
-    public bool isShielded = false;
-    public bool rewardIsActive = false;
-    public int obAvoids = 0;
-    public int maxAvoids = 3;
-    public int curAvoids = 0;
-    public float maxRewardCountdown;
-    public float rewardCountdown;
-    public Role myRole;
-    public PowerUp_State myPowerUp;
+    public bool                 isShielded = false;
+    public bool                 rewardIsActive = false;
+    public int                  obAvoids = 0;
+    public int                  maxAvoids = 3;
+    public int                  curAvoids = 0;
+    public float                maxRewardCountdown;
+    public float                rewardCountdown;
+    public Role                 myRole;
+    public PowerUp_State        myPowerUp;
 
     //Components
-    private Rigidbody myRigidbody;
-    private PlayerController player;
+    private Rigidbody           myRigidbody;
+    private PlayerController    player;
 
     //platform
-    private Transform NormalPlatform;
-    float timer = 0f;
+    private Transform           NormalPlatform;
+    private float               timer = 0f;
 
 
     //Sounds
-    public AudioClip slopeDown;
-    public AudioClip slopeUp;
+    public AudioClip            slopeDown;
+    public AudioClip            slopeUp;
 
-    private AudioSource slopeDownsource;
-    private AudioSource slopeUpsource;
+    private AudioSource         slopeDownsource;
+    private AudioSource         slopeUpsource;
 
-    private AudioSource dodgedOb;//john
-    private AudioSource powerUpGet; //john mate! fuuuuuuuuuu
+    private AudioSource[]       audioSources;
+    private AudioSource         dodgedOb;//john
+    private AudioSource         powerUpGet; //john mate! fuuuuuuuuuu
 
 
     void Start()
     {
         //init components
-        myRigidbody = GetComponent<Rigidbody>();
-        player = GetComponent<PlayerController>();
+        myRigidbody     = GetComponent<Rigidbody>();
+        player          = GetComponent<PlayerController>();
+        audioSources    = GameObject.Find("PlayerRewardSFX").GetComponents<AudioSource>();
+
+        //init audio clips
+        dodgedOb        = audioSources[0];
+        powerUpGet      = audioSources[1];
+
+
 
         //init variables
         rewardCountdown = maxRewardCountdown;
@@ -145,7 +153,6 @@ public class PlayerHandler : MonoBehaviour
             if (!rewardIsActive && myPowerUp == PowerUp_State.None)
             {
                 rewardIsActive = true;
-                dodgedOb.Play();//play dodge ob
             }
 
             //Check if reward timer is active
@@ -156,15 +163,20 @@ public class PlayerHandler : MonoBehaviour
                 {
                     myPowerUp = (PowerUp_State)Random.Range(1, 4);
                     powerUpGet.Play();//play powerup get
+                    curAvoids = 0;
+                    Debug.Log("duude you got a powerup. NICE!");
 
                     //reset
                     rewardIsActive = false;
                 }
-                else
-                {
-                    dodgedOb.Play();//play dodge ob
-                }
             }
+
+            if(curAvoids != maxAvoids - 1)
+            {
+              dodgedOb.Play();//play dodge ob
+              Debug.Log("WHAT A DODGE");
+            }
+
         }
 
         //platform(ground) slow and fast
