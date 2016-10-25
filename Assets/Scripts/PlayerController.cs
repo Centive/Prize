@@ -30,6 +30,13 @@ public class PlayerController : MonoBehaviour
     public GameObject       darkBallPrefab;
     public GameObject       dropObstaclePrefab;
 
+    //Power-ups audio
+    private AudioSource[]   powerAudios;
+    private AudioSource     darkballSfx;
+    private AudioSource     dropObstacleSfx;
+    private AudioSource     shieldSfx;
+    private AudioSource     speedSfx;
+
     //Start
     void Start()
     {
@@ -38,6 +45,13 @@ public class PlayerController : MonoBehaviour
         myAnimator      = GetComponentInChildren<Animator>();
         myTrail         = GetComponent<TrailRenderer>();
         playerHandler   = GetComponent<PlayerHandler>();
+        powerAudios     = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
+
+        //init audio clips
+        darkballSfx         = powerAudios[0];
+        dropObstacleSfx     = powerAudios[1];
+        shieldSfx           = powerAudios[2];
+        speedSfx            = powerAudios[3];
 
         //Disable models
         modelDagger.GetComponent<MeshRenderer>().enabled    = false;
@@ -91,21 +105,25 @@ public class PlayerController : MonoBehaviour
             {
                 case PlayerHandler.PowerUp_State.Darkball:
                     {
+                        darkballSfx.Play();
                         PowerUpDarkBall();
                         break;
                     }
                 case PlayerHandler.PowerUp_State.DropObstacle:
                     {
+                        dropObstacleSfx.Play();
                         PowerUpDropObstacle();
                         break;
                     }
                 case PlayerHandler.PowerUp_State.Shield:
-                    { 
+                    {
+                        shieldSfx.Play();
                         StartCoroutine(PowerUpShield());
                         break;
                     }
                 case PlayerHandler.PowerUp_State.Speed:
                     {
+                        speedSfx.Play();
                         StartCoroutine(PowerUpSpeed());
                         break;
                     }

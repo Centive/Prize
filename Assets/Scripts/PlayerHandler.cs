@@ -47,6 +47,9 @@ public class PlayerHandler : MonoBehaviour
     private AudioSource slopeDownsource;
     private AudioSource slopeUpsource;
 
+    private AudioSource dodgedOb;//john
+    private AudioSource powerUpGet; //john mate! fuuuuuuuuuu
+
 
     void Start()
     {
@@ -142,18 +145,24 @@ public class PlayerHandler : MonoBehaviour
             if (!rewardIsActive && myPowerUp == PowerUp_State.None)
             {
                 rewardIsActive = true;
+                dodgedOb.Play();//play dodge ob
             }
 
             //Check if reward timer is active
             if (rewardIsActive)
             {
-                curAvoids++;//increment the number of avoided obstacles
-                if (curAvoids >= maxAvoids)//if the number of avoided obstacles have past the max
+                curAvoids++;                //increment the number of avoided obstacles
+                if (curAvoids >= maxAvoids) //if the number of avoided obstacles have past the max
                 {
                     myPowerUp = (PowerUp_State)Random.Range(1, 4);
+                    powerUpGet.Play();//play powerup get
 
                     //reset
                     rewardIsActive = false;
+                }
+                else
+                {
+                    dodgedOb.Play();//play dodge ob
                 }
             }
         }
@@ -205,15 +214,11 @@ public class PlayerHandler : MonoBehaviour
                 player.movSpeed += 5f;
             }
         }
-
-   
     }
-
 
    //stay on platform
     void OnCollisionStay(Collision col)
     {
-     
         if (col.gameObject.tag == "Platformmoving")
 
         {
@@ -224,8 +229,6 @@ public class PlayerHandler : MonoBehaviour
             }
         }
     }
-
-   
    
     //Incline
     void OnCollisionEnter(Collision col)
@@ -239,8 +242,6 @@ public class PlayerHandler : MonoBehaviour
 
     void inclineslowfast(GameObject incline)
     {
-
-
         Vector3 angleInclie = incline.transform.eulerAngles;
         Debug.Log(angleInclie);
         if (angleInclie.z >= 45f && angleInclie.z <= 315f)
@@ -257,7 +258,6 @@ public class PlayerHandler : MonoBehaviour
             //Debug.Log("fast");
             //Debug.Log(player.movSpeed);
         }
-
     }
 
     void OnCollisionExit(Collision col)
@@ -267,7 +267,6 @@ public class PlayerHandler : MonoBehaviour
             player.movSpeed = 15f;
 
         }
-
     }
 
     //Obstacles
