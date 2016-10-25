@@ -27,3 +27,6 @@ Add indicator.cs
 
 Add darkball.cs
 -its just moving object script
+
+[11.21]
+Create new scene called testing_area_3 
