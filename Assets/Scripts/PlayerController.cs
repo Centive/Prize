@@ -5,64 +5,72 @@ public class PlayerController : MonoBehaviour
 {
 
     //Variables
-    public float            maxSpeed    = 0;
-    public float            movSpeed    = 0;
-    public float            jumpPower   = 0;
-    public bool             isGrounded;
+    public float maxSpeed = 0;
+    public float movSpeed = 0;
+    public float jumpPower = 0;
+    public bool isGrounded;
 
     //Components
-    public  Rigidbody       myRigidbody;
-    private Animator        myAnimator;
-    private TrailRenderer   myTrail;
-    private PlayerHandler   playerHandler;
+    public Rigidbody myRigidbody;
+    private Animator myAnimator;
+    private TrailRenderer myTrail;
+    private PlayerHandler playerHandler;
 
     //Models
-    public GameObject       modelDagger;
-    public GameObject       modelSlash;
-    public GameObject       shieldPuPrefab;
+    public GameObject modelDagger;
+    public GameObject modelSlash;
+    public GameObject shieldPuPrefab;
 
     //Controls
-    public KeyCode          jump;
-    public KeyCode          slide;
-    public KeyCode          usePowerUp;
+    public KeyCode jump;
+    public KeyCode slide;
+    public KeyCode usePowerUp;
 
     //power-ups
-    public GameObject       darkBallPrefab;
-    public GameObject       dropObstaclePrefab;
+    public GameObject darkBallPrefab;
+    public GameObject dropObstaclePrefab;
 
     //Power-ups audio
-    private AudioSource[]   powerAudios;
-    private AudioSource     darkballSfx;
-    private AudioSource     dropObstacleSfx;
-    private AudioSource     shieldSfx;
-    private AudioSource     speedSfx;
+    private AudioSource[] powerAudios;
+    private AudioSource darkballSfx;
+    private AudioSource dropObstacleSfx;
+    private AudioSource shieldSfx;
+    private AudioSource speedSfx;
+
+    //jump slide audio
+    private AudioSource jumpSFX;
+    private AudioSource slideSFX;
 
     //Start
     void Start()
     {
         //init components/gameobjects
-        myRigidbody     = GetComponent<Rigidbody>();
-        myAnimator      = GetComponentInChildren<Animator>();
-        myTrail         = GetComponent<TrailRenderer>();
-        playerHandler   = GetComponent<PlayerHandler>();
-        powerAudios     = GameObject.Find("PlayerPowerUpSFX").GetComponents<AudioSource>();
-
+        myRigidbody = GetComponent<Rigidbody>();
+        myAnimator = GetComponentInChildren<Animator>();
+        myTrail = GetComponent<TrailRenderer>();
+        playerHandler = GetComponent<PlayerHandler>();
+       powerAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
+       
         //init audio clips
-        darkballSfx         = powerAudios[0];
-        dropObstacleSfx     = powerAudios[1];
-        shieldSfx           = powerAudios[2];
-        speedSfx            = powerAudios[3];
+        darkballSfx = powerAudios[0];
+        dropObstacleSfx = powerAudios[1];
+        shieldSfx = powerAudios[2];
+        speedSfx = powerAudios[3];
+
+        jumpSFX = powerAudios[4];
+        slideSFX = powerAudios[5];
+
 
         //Disable models
-        modelDagger.GetComponent<MeshRenderer>().enabled    = false;
-        modelSlash.GetComponent<MeshRenderer>().enabled     = false;
+        modelDagger.GetComponent<MeshRenderer>().enabled = false;
+        modelSlash.GetComponent<MeshRenderer>().enabled = false;
 
         //Init variables
-        movSpeed                = maxSpeed;
-        playerHandler.myRole    = PlayerHandler.Role.Runner;
+        movSpeed = maxSpeed;
+        playerHandler.myRole = PlayerHandler.Role.Runner;
         playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
     }
-    
+
     //Update
     void Update()
     {
@@ -82,6 +90,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(jump))
             {
                 myAnimator.SetTrigger("Jump");
+                jumpSFX.Play();
                 myRigidbody.velocity += Vector3.up * jumpPower;
             }
         }
@@ -91,6 +100,7 @@ public class PlayerController : MonoBehaviour
         {
             myAnimator.SetTrigger("Slide");
             myAnimator.SetBool("isSliding", true);
+            slideSFX.Play();
             StartCoroutine(slideCoroutine());
         }
         //Slide
@@ -146,7 +156,7 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = false;
         }
-        
+
     }
 
     //POWER UPS///////////////////////////////////////////////////////
@@ -161,7 +171,7 @@ public class PlayerController : MonoBehaviour
         Instantiate(darkBallPrefab, new Vector3(transform.position.x + 3f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
         playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
     }
-    
+
     //slide(delay)
     IEnumerator slideCoroutine()
     {
