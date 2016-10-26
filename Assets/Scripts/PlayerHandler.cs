@@ -52,6 +52,7 @@ public class PlayerHandler : MonoBehaviour
     private AudioSource slideObs;
     private AudioSource jumpObs;
 
+    private AudioSource[] dodgeAudioSources;
     private AudioSource dodgedOb;//john
     private AudioSource powerUpGet; //john mate! fuuuuuuuuuu
 
@@ -61,19 +62,21 @@ public class PlayerHandler : MonoBehaviour
         //init components
         myRigidbody = GetComponent<Rigidbody>();
         player = GetComponent<PlayerController>();
-
+        
         //init variables
         rewardCountdown = maxRewardCountdown;
 
         //sounds
-        collisionSFX = GameObject.Find("CollisionSFX").GetComponents<AudioSource>();
-        slopeDownsource = collisionSFX[0];
-        slopeUpsource = collisionSFX[1];
-        platformFast = collisionSFX[2];
-        platformSlow = collisionSFX[3];
-
-        slideObs = collisionSFX[4];
-        jumpObs = collisionSFX[5];
+        collisionSFX        = GameObject.Find("CollisionSFX").GetComponents<AudioSource>();
+        dodgeAudioSources   = GameObject.Find("PlayerRewardSFX").GetComponents<AudioSource>();
+        slopeDownsource     = collisionSFX[0];
+        slopeUpsource       = collisionSFX[1];
+        platformFast        = collisionSFX[2];
+        platformSlow        = collisionSFX[3];
+        dodgedOb            = dodgeAudioSources[0];
+        powerUpGet          = dodgeAudioSources[1];
+        slideObs            = collisionSFX[4];
+        jumpObs             = collisionSFX[5];
     }
 
     //Wall collide detection
@@ -156,7 +159,6 @@ public class PlayerHandler : MonoBehaviour
             if (!rewardIsActive && myPowerUp == PowerUp_State.None)
             {
                 rewardIsActive = true;
-                dodgedOb.Play();//play dodge ob
             }
 
             //Check if reward timer is active
@@ -167,14 +169,18 @@ public class PlayerHandler : MonoBehaviour
                 {
                     myPowerUp = (PowerUp_State)Random.Range(1, 4);
                     powerUpGet.Play();//play powerup get
+                    curAvoids = 0;
+                    Debug.Log("duude you got a powerup. NICE!");
 
                     //reset
                     rewardIsActive = false;
                 }
-                else
-                {
-                    dodgedOb.Play();//play dodge ob
-                }
+            }
+
+            if(curAvoids != maxAvoids - 1)
+            {
+              dodgedOb.Play();//play dodge ob
+              Debug.Log("WHAT A DODGE");
             }
         }
 
