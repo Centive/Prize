@@ -19,27 +19,33 @@ public class Game_Manager : MonoBehaviour
     }
 
     //Game UI
-    public Text         uiCountdown;
-    public Text         uiPlayerWarning;
-    public Text         uiGameOver;
-    public Image        uiInstructions;
+    public Text uiCountdown;
+    public Text uiPlayerWarning;
+    public Text uiGameOver;
+    public Image uiInstructions;
+
+    //who got the daggar
+    public Text daggarText;
+    
+    private int flag=0;
+  
 
     //gameobjects
-    public GameObject   prefabPlayer;
+    public GameObject prefabPlayer;
     public GameObject[] players;
-    private GameObject  altar;
-    private Transform   halfwayPoint;
+    private GameObject altar;
+    private Transform halfwayPoint;
 
     //variables
-    public GameState    curState            = GameState.None;
-    public bool         checkChaserWin      = false;
-    public bool         isPhase2            = false,
-                        isPhase1Countdown   = false,
-                        isPhase2Countdown   = false;
-    private float       player1Speed        = 0,
-                        player2Speed        = 0;
-    private float       phase1Timer         = 6f,
-                        phase2Timer         = 6f;
+    public GameState curState = GameState.None;
+    public bool checkChaserWin = false;
+    public bool isPhase2 = false,
+                        isPhase1Countdown = false,
+                        isPhase2Countdown = false;
+    private float player1Speed = 0,
+                        player2Speed = 0;
+    private float phase1Timer = 6f,
+                        phase2Timer = 6f;
 
 
     void Start()
@@ -58,6 +64,7 @@ public class Game_Manager : MonoBehaviour
             player1Speed = players[0].GetComponent<PlayerController>().movSpeed;  //Set player speed
             player2Speed = players[1].GetComponent<PlayerController>().movSpeed;  //Set player speed
         }
+
     }
 
     void Update()
@@ -78,7 +85,10 @@ public class Game_Manager : MonoBehaviour
             }
             IsPlayerBehind();
             GetState();
+           checkWhoGotDaggar();
+
         }
+
     }
 
     //Find what state in the game were at
@@ -281,7 +291,7 @@ public class Game_Manager : MonoBehaviour
             pos1 = players[0].transform.position.x;
             pos2 = players[1].transform.position.x;
         }
-        
+
         distance = pos1 - pos2;             //get distance of the players
 
         IsPlayerBehindWarnings(distance);   //get warnings
@@ -310,7 +320,7 @@ public class Game_Manager : MonoBehaviour
             uiPlayerWarning.gameObject.SetActive(true);
             uiPlayerWarning.text = "Player2 don't fall too far behind!";
         }
-        
+
         //////////////////////////////////////////////////////////////////////
         //Check if players have fell behind too much
         switch (curState)
@@ -324,7 +334,7 @@ public class Game_Manager : MonoBehaviour
                         isPhase2 = true;
                         Destroy(altar);
                     }
-        
+
                     if (distance > 42f)//if player 2 has fell behind
                     {
                         players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
@@ -341,7 +351,7 @@ public class Game_Manager : MonoBehaviour
                         curState = GameState.End;
                         Destroy(players[0]);
                     }
-        
+
                     if (distance > 42f)//if player 2 has fell behind
                     {
                         curState = GameState.End;
@@ -363,7 +373,7 @@ public class Game_Manager : MonoBehaviour
                 Destroy(players[0]);
             }
         }
-        
+
         if (players[1] != null)//Check if player 2 has fell from a pit
         {
             if (players[1].transform.position.y <= -10f)
@@ -372,5 +382,25 @@ public class Game_Manager : MonoBehaviour
                 Destroy(players[1]);
             }
         }
+    }
+
+    //Daggar
+    void checkWhoGotDaggar()
+    {
+        flag = altar.GetComponent<Altar>().Justflag();
+
+        if (flag == 1)
+        {  
+            daggarText.text = "Player 1 got the Daggar!";
+            Destroy(daggarText, 5f);
+
+
+        }
+        else if (flag == 2)
+        {
+            daggarText.text = "Player 2 got the Daggar!";
+            Destroy(daggarText, 5f);
+        }
+      
     }
 }

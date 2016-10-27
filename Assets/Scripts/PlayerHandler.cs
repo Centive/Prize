@@ -57,7 +57,7 @@ public class PlayerHandler : MonoBehaviour
     private AudioSource dodgedOb;//john
     private AudioSource powerUpGet; //john mate! fuuuuuuuuuu
 
-
+   
     void Start()
     {
         //init components
@@ -106,6 +106,7 @@ public class PlayerHandler : MonoBehaviour
     void Update()
     {
         CheckPowerUpReward();
+        haloforchaser();
     }
 
     void CheckPowerUpReward()
@@ -309,7 +310,23 @@ public class PlayerHandler : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         player.movSpeed = prevSpeed;
     }
+
+    void haloforchaser()
+    {
+     
+        if (myRole == Role.Chaser)
+        {
+            Behaviour h = (Behaviour)GetComponent("Halo");
+            h.enabled = true;
+        }
+
+
+    }
 }
+
+
+
+
     //private AudioSource[]       audioSources;
     //private AudioSource         dodgedOb;//john
     //private AudioSource         powerUpGet; //john mate! fuuuuuuuuuu
