@@ -21,7 +21,12 @@ public class testChar : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            DoAbsolutelyNothing.SetFloat("MySpeed", 10.0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             why = ThisIsAnnoying.death;
             DoAbsolutelyNothing.SetInteger("MyRole", (int)why);

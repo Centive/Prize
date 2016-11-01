@@ -16,9 +16,7 @@ public class PlayerController : MonoBehaviour
     private TrailRenderer myTrail;
     private PlayerHandler playerHandler;
 
-    //Models
-    public GameObject modelDagger;
-    public GameObject modelSlash;
+    //Prefab
     public GameObject shieldPuPrefab;
 
     //Controls
@@ -31,7 +29,7 @@ public class PlayerController : MonoBehaviour
     public GameObject dropObstaclePrefab;
 
     //Power-ups audio
-    private AudioSource[] powerAudios;
+    public AudioSource[] powerAudios;
     private AudioSource darkballSfx;
     private AudioSource dropObstacleSfx;
     private AudioSource shieldSfx;
@@ -46,25 +44,19 @@ public class PlayerController : MonoBehaviour
     {
         //init components/gameobjects
         myRigidbody = GetComponent<Rigidbody>();
-        myAnimator = GetComponentInChildren<Animator>();
+        myAnimator = GetComponent<Animator>();
         myTrail = GetComponent<TrailRenderer>();
         playerHandler = GetComponent<PlayerHandler>();
-       powerAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
-       
+        powerAudios = GameObject.Find("Player/PlayerSFX").GetComponents<AudioSource>();
+
         //init audio clips
         darkballSfx = powerAudios[0];
         dropObstacleSfx = powerAudios[1];
         shieldSfx = powerAudios[2];
         speedSfx = powerAudios[3];
-
         jumpSFX = powerAudios[4];
         slideSFX = powerAudios[5];
-
-
-        //Disable models
-        modelDagger.GetComponent<MeshRenderer>().enabled = false;
-        modelSlash.GetComponent<MeshRenderer>().enabled = false;
-
+        
         //Init variables
         movSpeed = maxSpeed;
         playerHandler.myRole = PlayerHandler.Role.Runner;
@@ -83,13 +75,14 @@ public class PlayerController : MonoBehaviour
     {
         //Auto-Run
         myRigidbody.velocity = new Vector3(1 * movSpeed, myRigidbody.velocity.y);
+        myAnimator.SetFloat("MySpeed", myRigidbody.velocity.x);//ANIMATION: Trigger trigger running animation
 
         if (isGrounded)
         {
             //Jump
             if (Input.GetKeyDown(jump))
             {
-                myAnimator.SetTrigger("Jump");
+                myAnimator.SetTrigger("jump");
                 jumpSFX.Play();
                 myRigidbody.velocity += Vector3.up * jumpPower;
             }
@@ -98,16 +91,11 @@ public class PlayerController : MonoBehaviour
         //Slide
         if (Input.GetKeyDown(slide) && !myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
         {
-            myAnimator.SetTrigger("Slide");
-            myAnimator.SetBool("isSliding", true);
+            myAnimator.SetTrigger("slide");
             slideSFX.Play();
             StartCoroutine(slideCoroutine());
         }
-        //Slide
-        if (Input.GetKeyUp(slide))
-        {
-            myAnimator.SetBool("isSliding", false);
-        }
+
         //Use powerup
         if (Input.GetKeyDown(usePowerUp))
         {
