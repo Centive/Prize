@@ -1,0 +1,174 @@
+fileFormatVersion: 2
+guid: c852646366355d34eb155f3c5ecb6952
+timeCreated: 1478041281
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Wood_shack:Wood_Plank_Pack_A1:group1
+    100004: Wood_shack:Wood_Plank_Pack_A1:transform41
+    100006: Wood_shack:Wood_Plank_Pack_A1:transform42
+    100008: Wood_shack:Wood_Plank_Pack_A1:transform43
+    100010: Wood_shack:Wood_Plank_Pack_A1:transform44
+    100012: Wood_shack:Wood_Plank_Pack_A1:transform45
+    100014: Wood_shack:Wood_Plank_Pack_A1:transform46
+    100016: Wood_shack:Wood_Plank_Pack_A1:transform47
+    100018: Wood_shack:Wood_Plank_Pack_A1:transform48
+    100020: Wood_shack:Wood_Plank_Pack_A1:transform58
+    100022: Wood_shack:Wood_Plank_Pack_A1:transform59
+    100024: Wood_shack:Wood_Plank_Pack_A1:transform60
+    100026: Wood_shack:Wood_Plank_Pack_A1:transform61
+    100028: Wood_shack:Wood_Plank_Pack_A1:transform62
+    100030: Wood_shack:Wood_Plank_Pack_A1:transform63
+    100032: Wood_shack:Wood_Plank_Pack_A1:transform64
+    100034: Wood_shack:Wood_Plank_Pack_A1:transform65
+    100036: Wood_shack:Wood_Plank_Pack_A1:transform66
+    100038: Wood_shack:Wood_Plank_Pack_A1:transform67
+    100040: Wood_shack:Wood_Plank_Pack_A1:transform68
+    100042: Wood_shack:Wood_Plank_Pack_A1:transform69
+    100044: Wood_shack:Wood_Plank_Pack_A1:transform70
+    100046: Wood_shack:Wood_Plank_Pack_A1:transform71
+    100048: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_A4
+    100050: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_B3
+    100052: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_C5
+    100054: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_C6
+    100056: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_D2
+    100058: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_D4
+    100060: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_F2
+    100062: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_F3
+    100064: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A2
+    100066: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A3
+    100068: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A4
+    100070: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B6
+    100072: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B7
+    100074: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B8
+    100076: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_C4
+    100078: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_D2
+    100080: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_D4
+    100082: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_E6
+    100084: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_E8
+    100086: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F2
+    100088: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F3
+    100090: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F4
+    100092: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_Straight_A
+    100094: Wood_shack:Wood_Plank_Pack_A1:Wood_Stair
+    400000: //RootNode
+    400002: Wood_shack:Wood_Plank_Pack_A1:group1
+    400004: Wood_shack:Wood_Plank_Pack_A1:transform41
+    400006: Wood_shack:Wood_Plank_Pack_A1:transform42
+    400008: Wood_shack:Wood_Plank_Pack_A1:transform43
+    400010: Wood_shack:Wood_Plank_Pack_A1:transform44
+    400012: Wood_shack:Wood_Plank_Pack_A1:transform45
+    400014: Wood_shack:Wood_Plank_Pack_A1:transform46
+    400016: Wood_shack:Wood_Plank_Pack_A1:transform47
+    400018: Wood_shack:Wood_Plank_Pack_A1:transform48
+    400020: Wood_shack:Wood_Plank_Pack_A1:transform58
+    400022: Wood_shack:Wood_Plank_Pack_A1:transform59
+    400024: Wood_shack:Wood_Plank_Pack_A1:transform60
+    400026: Wood_shack:Wood_Plank_Pack_A1:transform61
+    400028: Wood_shack:Wood_Plank_Pack_A1:transform62
+    400030: Wood_shack:Wood_Plank_Pack_A1:transform63
+    400032: Wood_shack:Wood_Plank_Pack_A1:transform64
+    400034: Wood_shack:Wood_Plank_Pack_A1:transform65
+    400036: Wood_shack:Wood_Plank_Pack_A1:transform66
+    400038: Wood_shack:Wood_Plank_Pack_A1:transform67
+    400040: Wood_shack:Wood_Plank_Pack_A1:transform68
+    400042: Wood_shack:Wood_Plank_Pack_A1:transform69
+    400044: Wood_shack:Wood_Plank_Pack_A1:transform70
+    400046: Wood_shack:Wood_Plank_Pack_A1:transform71
+    400048: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_A4
+    400050: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_B3
+    400052: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_C5
+    400054: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_C6
+    400056: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_D2
+    400058: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_D4
+    400060: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_F2
+    400062: Wood_shack:Wood_Plank_Pack_A1:Wood_Log_F3
+    400064: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A2
+    400066: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A3
+    400068: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_A4
+    400070: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B6
+    400072: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B7
+    400074: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_B8
+    400076: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_C4
+    400078: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_D2
+    400080: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_D4
+    400082: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_E6
+    400084: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_E8
+    400086: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F2
+    400088: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F3
+    400090: Wood_shack:Wood_Plank_Pack_A1:Wood_Plank_F4
+    400092: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_Straight_A
+    400094: Wood_shack:Wood_Plank_Pack_A1:Wood_Stair
+    2300000: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_Straight_A
+    2300002: Wood_shack:Wood_Plank_Pack_A1:Wood_Stair
+    3300000: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_Straight_A
+    3300002: Wood_shack:Wood_Plank_Pack_A1:Wood_Stair
+    4300000: Wood_shack:Wood_Plank_Pack_A1:Wood_Stair
+    4300002: Wood_shack:Wood_Plank_Pack_A1:Wood_plank_Straight_A
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

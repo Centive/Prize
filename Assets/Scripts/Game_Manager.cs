@@ -53,7 +53,9 @@ public class Game_Manager : MonoBehaviour
         //init components/gameobjects
         players = GameObject.FindGameObjectsWithTag("Player");
         altar = GameObject.FindGameObjectWithTag("Altar");
-        halfwayPoint = altar.transform;
+
+        if(altar != null)//for testing purposes
+            halfwayPoint = altar.transform;
 
         //init variables
         curState = GameState.Phase1_Pause;
