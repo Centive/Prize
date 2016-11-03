@@ -10,7 +10,7 @@ public class platform_up_down : MonoBehaviour
     float distance;
     bool reached = false;
     Rigidbody platformRigidBody;
-    public float moveSpeed=0.8f;
+    public float moveSpeed;
 
     bool flag = false;
     public void Start()
@@ -55,9 +55,9 @@ public class platform_up_down : MonoBehaviour
     void move(Vector3 pos, Vector3 towards)
     {
         Vector3 direction = (towards - pos).normalized;
-        platformRigidBody.MovePosition(platformRigidBody.position + direction * moveSpeed * Time.deltaTime);
+        platformRigidBody.MovePosition(platformRigidBody.position + direction * Time.deltaTime);
 
-        transform.position = Vector3.MoveTowards(pos, towards, .1f);
+        transform.position = Vector3.MoveTowards(pos, towards, moveSpeed);
 
     }
 
