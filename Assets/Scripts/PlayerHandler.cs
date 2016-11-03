@@ -296,7 +296,14 @@ public class PlayerHandler : MonoBehaviour
         if (col.gameObject.tag == "Incline")
         {
             CheckGroundIncline(col.gameObject);
-            
+        }
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject.tag == "Incline")
+        {
+            StartCoroutine(NormGround());
         }
     }
     
@@ -305,27 +312,24 @@ public class PlayerHandler : MonoBehaviour
     {
         //get angle from game obj
         Vector3 angle = ground.transform.eulerAngles;
-
+        Vector3 ParentAngle = ground.transform.parent.gameObject.transform.eulerAngles;
+        
         //check for a slow inc
-        if (angle.z >= 5f && angle.z <= 45f)
-        {
-            slopeUpsource.Play();
-            //player.movSpeed -= 4f;
-            StartCoroutine(SlowGround());
+        if(ParentAngle.y <= 1f)
+            if (angle.z >= 5f && angle.z <= 45f && ParentAngle.y == 0f)
+            {
+                slopeUpsource.Play();
+                StartCoroutine(SlowGround());
 
-        }
+            }
         //check for a fast inc
-        if (angle.z <= -5f && angle.z >= -45f)
+        if(ParentAngle.y >= 179f)
         {
-            slopeDownsource.Play();
-            //player.movSpeed += 4f;
-            StartCoroutine(FastGround());
-        }
-
-        //check for flat ground
-        if(angle.z <= 4.9f && angle.z >= -4.9f)
-        {
-            StartCoroutine(NormGround());
+            if (angle.z >= 5f && angle.z <= 45f)
+            {
+                slopeDownsource.Play();
+                StartCoroutine(FastGround());
+            }
         }
     }
 
@@ -348,15 +352,7 @@ public class PlayerHandler : MonoBehaviour
         player.movSpeed = player.maxSpeed;
         yield return null;
     }
-
-    void OnCollisionExit(Collision col)
-    {
-        if (col.gameObject.tag == "Incline")
-        {
-            player.movSpeed = 15f;
-        }
-    }
-
+    
     //Obstacles
 
     //Slow
@@ -364,7 +360,7 @@ public class PlayerHandler : MonoBehaviour
     {
         float prevSpeed = player.movSpeed;
         player.movSpeed -= 5f;
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
         player.movSpeed = prevSpeed;
     }
 

@@ -133,14 +133,14 @@ public class PlayerController : MonoBehaviour
     void OnCollisionStay(Collision col)
     {
         //Check if grounded
-        if (col.gameObject.tag == "Ground" && col.gameObject.tag == "Incline")
+        if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Incline")
         {
             isGrounded = true;
         }
     }
     void OnCollisionExit(Collision col)
     {
-        if (col.gameObject.tag == "Ground" && col.gameObject.tag == "Incline")
+        if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Incline")
         {
             isGrounded = false;
         }
