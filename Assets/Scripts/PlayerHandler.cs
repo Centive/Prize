@@ -280,46 +280,79 @@ public class PlayerHandler : MonoBehaviour
     //stay on platform
     void OnCollisionStay(Collision col)
     {
+        //Handle platforms
         if (col.gameObject.tag == "Platformmoving")
-
         {
-
             if (timer <= 2f)
             {
                 this.transform.position = col.transform.position;
             }
         }
+        
+        //Handle inclines
+        if(col.gameObject.tag == "Ground")
+        {
+            CheckGroundIncline(col.gameObject);
+        }
+
     }
 
     //Incline
-    void OnCollisionEnter(Collision col)
+    //void OnCollisionEnter(Collision col)
+    //{
+    //    if (col.gameObject.tag == "Incline")
+    //    {
+    //        inclineslowfast(col.gameObject);
+    //    }
+    //}
+    
+    //incline check
+    void CheckGroundIncline(GameObject ground)
     {
+        //get angle from game obj
+        Vector3 angle = ground.transform.eulerAngles;
 
-        if (col.gameObject.tag == "Incline")
+        //check for a slow inc
+        if (angle.z >= 5f && angle.z <= 45f)
         {
-            inclineslowfast(col.gameObject);
+            slopeUpsource.Play();
+            //player.movSpeed -= 4f;
+            StartCoroutine(SlowGround());
+
+        }
+        //check for a fast inc
+        if (angle.z <= -5f && angle.z >= -45f)
+        {
+            slopeDownsource.Play();
+            //player.movSpeed += 4f;
+            StartCoroutine(FastGround());
+        }
+
+        //check for flat ground
+        if(angle.z <= 4.9f && angle.z >= -4.9f)
+        {
+            StartCoroutine(NormGround());
         }
     }
 
-    void inclineslowfast(GameObject incline)
+    IEnumerator SlowGround()//Incline slow check
     {
-        Vector3 angleInclie = incline.transform.eulerAngles;
+        Debug.Log("SLOW INCLINE: " + player.movSpeed);
+        player.movSpeed -= 4f;
+        yield return null;
+    }
 
-        //Slow 
-        if (angleInclie.z >= 45f && angleInclie.z <= 315f)
-        {
-            slopeUpsource.Play();
-            player.movSpeed -= 4f;
+    IEnumerator FastGround()//Incline fast check
+    {
+        Debug.Log("FAST INCLINE: " + player.movSpeed);
+        player.movSpeed += 4f;
+        yield return null;
+    }
 
-        }
-
-        //Fast
-        else if (angleInclie.z >= 315f)
-        {
-            slopeDownsource.Play();
-            player.movSpeed += 4f;
-
-        }
+    IEnumerator NormGround()//Flat ground check
+    {
+        player.movSpeed = player.maxSpeed;
+        yield return null;
     }
 
     void OnCollisionExit(Collision col)
@@ -327,7 +360,6 @@ public class PlayerHandler : MonoBehaviour
         if (col.gameObject.tag == "Incline")
         {
             player.movSpeed = 15f;
-
         }
     }
 
