@@ -288,23 +288,17 @@ public class PlayerHandler : MonoBehaviour
                 this.transform.position = col.transform.position;
             }
         }
-        
-        //Handle inclines
-        if(col.gameObject.tag == "Ground")
-        {
-            CheckGroundIncline(col.gameObject);
-        }
-
     }
 
-    //Incline
-    //void OnCollisionEnter(Collision col)
-    //{
-    //    if (col.gameObject.tag == "Incline")
-    //    {
-    //        inclineslowfast(col.gameObject);
-    //    }
-    //}
+    //handle Incline
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.tag == "Incline")
+        {
+            CheckGroundIncline(col.gameObject);
+            
+        }
+    }
     
     //incline check
     void CheckGroundIncline(GameObject ground)
