@@ -73,7 +73,7 @@ public class Game_Manager : MonoBehaviour
     void Start()
     {
         //audio
-        BGMSFX = GameObject.Find("BGM").GetComponents<AudioSource>();
+        BGMSFX = GameObject.Find( "BGM" ).GetComponents<AudioSource>();
         BGM = BGMSFX[0];
         playerWin = BGMSFX[1];
         phase2SFX = BGMSFX[2];
@@ -83,20 +83,20 @@ public class Game_Manager : MonoBehaviour
         startScreenSFX.Play();
 
         //init components/gameobjects
-        players = GameObject.FindGameObjectsWithTag("Player");
-        altar = GameObject.FindGameObjectWithTag("Altar");
+        players = GameObject.FindGameObjectsWithTag( "Player" );
+        altar = GameObject.FindGameObjectWithTag( "Altar" );
 
-        if (altar != null)//for testing purposes
+        if( altar != null )//for testing purposes
             halfwayPoint = altar.transform;
 
         //init variables
         curState = GameState.Phase1_Pause;
 
-        startButton.onClick.AddListener(gameStartClick);
+        startButton.onClick.AddListener( gameStartClick );
 
 
 
-        if (players.Length == 2)
+        if( players.Length == 2 )
         {
             player1Speed = players[0].GetComponent<PlayerController>().movSpeed;  //Set player speed
             player2Speed = players[1].GetComponent<PlayerController>().movSpeed;  //Set player speed
@@ -106,18 +106,18 @@ public class Game_Manager : MonoBehaviour
 
     void Update()
     {
-        if (players.Length == 2)
+        if( players.Length == 2 )
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if( Input.GetKeyDown( KeyCode.Escape ) )
             {
                 Application.Quit();
             }
-            if (curState == GameState.End)
+            if( curState == GameState.End )
             {
                 //redo Game
-                if (Input.GetKeyDown(KeyCode.Space))
+                if( Input.GetKeyDown( KeyCode.Space ) )
                 {
-                    SceneManager.LoadScene("Testing_Area");
+                    SceneManager.LoadScene( "Testing_Area" );
                 }
             }
             IsPlayerBehind();
@@ -131,123 +131,124 @@ public class Game_Manager : MonoBehaviour
     //Find what state in the game were at
     void GetState()
     {
-        switch (curState)
+        switch( curState )
         {
-            case GameState.Phase1_Pause:
+        case GameState.Phase1_Pause:
+        {
+            //Set players to not move
+            players[0].GetComponent<PlayerController>().movSpeed = 0;
+            players[1].GetComponent<PlayerController>().movSpeed = 0;
+
+            //Start Game
+            if( Input.GetKeyDown( KeyCode.Space ) )
+            {
+                uiInstructions.gameObject.SetActive( false );
+                playerNameCanvas.gameObject.SetActive( true );
+                isPhase1Countdown = true;
+                getPlayerName();
+            }
+
+            //Start Countdown
+            if( isPhase1Countdown )
+            {
+                uiCountdown.gameObject.SetActive( true );
+                phase1Timer -= Time.deltaTime;
+                uiCountdown.text = (int)phase1Timer + "";
+
+                if( phase1Timer < 0 )
                 {
-                    //Set players to not move
+                    //Set their speeds
+                    players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                    players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
+                    uiCountdown.gameObject.SetActive( false );
+                    curState = GameState.Phase1_Start;
+                    startScreenSFX.Pause();
+
+                    BGM.Play();
+
+                }
+            }
+            break;
+        }
+        case GameState.Phase1_Start:
+        {
+            CheckDeath();   //Checks if a player died in the level environment
+            SetPhase2();    //Checks if for phase 2
+            break;
+        }
+        case GameState.Phase2_Pause:
+        {
+            //Set players to not move
+            players[0].GetComponent<PlayerController>().movSpeed = 0;
+            players[1].GetComponent<PlayerController>().movSpeed = 0;
+
+            //Start Countdown
+            if( isPhase2Countdown )
+            {
+                uiCountdown.gameObject.SetActive( true );
+                phase2Timer -= Time.deltaTime;
+                uiCountdown.text = (int)phase2Timer + "";
+
+                if( phase2Timer < 0 )
+                {
+                    //Set their speeds
+                    players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                    players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
+                    uiCountdown.gameObject.SetActive( false );
+                    curState = GameState.Phase2_Start;
+                }
+            }
+            break;
+        }
+        case GameState.Phase2_Start:
+        {
+            CheckDeath();   //Checks if a player died in the level environment
+            CheckChaserWin();
+            CheckRunnerWin();
+            break;
+        }
+        case GameState.End:
+        {
+            uiGameOver.gameObject.SetActive( true );
+            startScreen.gameObject.SetActive( false );
+            if( players[0] != null )
+            {
+                if( players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner )
+                {
+                    uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
+                }
+                if( players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
+                {
+                    uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
+                }
+            }
+
+            if( players[1] != null )
+            {
+                if( players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner )
+                {
+                    uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
+                }
+                if( players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
+                {
+                    uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
+                }
+            }
+            //redo Game
+            if( Input.GetKeyDown( KeyCode.Space ) )
+            {
+                SceneManager.LoadScene( "Testing_Area" );
+            }
+
+            //Runner stop at end
+            if( players[0] != null )
+                if( players[0].transform.position.x >= 880f )
                     players[0].GetComponent<PlayerController>().movSpeed = 0;
+            if( players[1] != null )
+                if( players[1].transform.position.x >= 880f )
                     players[1].GetComponent<PlayerController>().movSpeed = 0;
-
-                    //Start Game
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        uiInstructions.gameObject.SetActive(false);
-                        playerNameCanvas.gameObject.SetActive(true);
-                        isPhase1Countdown = true;
-                        getPlayerName();
-                    }
-
-                    //Start Countdown
-                    if (isPhase1Countdown)
-                    {
-                        uiCountdown.gameObject.SetActive(true);
-                        phase1Timer -= Time.deltaTime;
-                        uiCountdown.text = (int)phase1Timer + "";
-
-                        if (phase1Timer < 0)
-                        {
-                            //Set their speeds
-                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
-                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
-                            uiCountdown.gameObject.SetActive(false);
-                            curState = GameState.Phase1_Start;
-                            startScreenSFX.Pause();
-
-                            BGM.Play();
-
-                        }
-                    }
-                    break;
-                }
-            case GameState.Phase1_Start:
-                {
-                    CheckDeath();   //Checks if a player died in the level environment
-                    SetPhase2();    //Checks if for phase 2
-                    break;
-                }
-            case GameState.Phase2_Pause:
-                {
-                    //Set players to not move
-                    players[0].GetComponent<PlayerController>().movSpeed = 0;
-                    players[1].GetComponent<PlayerController>().movSpeed = 0;
-
-                    //Start Countdown
-                    if (isPhase2Countdown)
-                    {
-                        uiCountdown.gameObject.SetActive(true);
-                        phase2Timer -= Time.deltaTime;
-                        uiCountdown.text = (int)phase2Timer + "";
-
-                        if (phase2Timer < 0)
-                        {
-                            //Set their speeds
-                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
-                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
-                            uiCountdown.gameObject.SetActive(false);
-                            curState = GameState.Phase2_Start;
-                        }
-                    }
-                    break;
-                }
-            case GameState.Phase2_Start:
-                {
-                    CheckDeath();   //Checks if a player died in the level environment
-                    CheckChaserWin();
-                    CheckRunnerWin();
-                    break;
-                }
-            case GameState.End:
-                {
-                    uiGameOver.gameObject.SetActive(true);
-                    if (players[0] != null)
-                    {
-                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
-                        {
-                            uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
-                        }
-                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                        {
-                            uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
-                        }
-                    }
-
-                    if (players[1] != null)
-                    {
-                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
-                        {
-                            uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
-                        }
-                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                        {
-                            uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
-                        }
-                    }
-                    //redo Game
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        SceneManager.LoadScene("Testing_Area");
-                    }
-
-                    //Runner stop at end
-                    if (players[0] != null)
-                        if (players[0].transform.position.x >= 880f)
-                            players[0].GetComponent<PlayerController>().movSpeed = 0;
-                    if (players[1] != null)
-                        if (players[1].transform.position.x >= 880f)
-                            players[1].GetComponent<PlayerController>().movSpeed = 0;
-                    break;
-                }
+            break;
+        }
         }
     }
 
@@ -255,21 +256,21 @@ public class Game_Manager : MonoBehaviour
     void SetPhase2()
     {
         //Move the runner 5 units infront of the chaser
-        if (isPhase2)
+        if( isPhase2 )
         {
             phase2SFX.Play();
             BGM.Pause();
             //Check for other players
-            if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+            if( players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
             {
                 players[0].transform.position = halfwayPoint.position;
-                players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
+                players[1].transform.position = new Vector3( players[0].transform.position.x + 5f, 0.0f, 0.0f );
             }
 
-            if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+            if( players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
             {
                 players[1].transform.position = halfwayPoint.position;
-                players[0].transform.position = new Vector3(players[1].transform.position.x + 5f, 0.0f, 0.0f);
+                players[0].transform.position = new Vector3( players[1].transform.position.x + 5f, 0.0f, 0.0f );
             }
 
             //move to next state
@@ -283,55 +284,55 @@ public class Game_Manager : MonoBehaviour
     //Available in phase2_start
     void CheckChaserWin()
     {
-        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+        if( players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
         {
             //Check if the chaser has won
-            if (players[0].transform.InverseTransformPoint(players[1].transform.position).x >= 0)
+            if( players[0].transform.InverseTransformPoint( players[1].transform.position ).x >= 0 )
             {
-               
+
 
                 curState = GameState.End;
 
-                Destroy(players[1]);
+                Destroy( players[1] );
             }
         }
 
-        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+        if( players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser )
         {
             //Check if the chaser has won
-            if (players[1].transform.InverseTransformPoint(players[0].transform.position).x >= 0)
+            if( players[1].transform.InverseTransformPoint( players[0].transform.position ).x >= 0 )
             {
-               
+
 
                 curState = GameState.End;
-                Destroy(players[0]);
+                Destroy( players[0] );
             }
         }
     }
     void CheckRunnerWin()
     {
-        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+        if( players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner )
         {
-            if (players[0].transform.position.x >= 870f)
+            if( players[0].transform.position.x >= 870f )
             {
-                gameOverImg.gameObject.SetActive(true);
+                gameOverImg.gameObject.SetActive( true );
                 playerWin.Play();
 
                 curState = GameState.End;
 
-                Destroy(players[1]);
+                Destroy( players[1] );
             }
         }
 
-        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+        if( players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner )
         {
-            if (players[1].transform.position.x >= 870f)
+            if( players[1].transform.position.x >= 870f )
             {
-                gameOverImg.gameObject.SetActive(true);
+                gameOverImg.gameObject.SetActive( true );
                 playerWin.Play();
 
                 curState = GameState.End;
-                Destroy(players[0]);
+                Destroy( players[0] );
             }
         }
     }
@@ -343,7 +344,7 @@ public class Game_Manager : MonoBehaviour
         float pos1 = 0;
         float pos2 = 0;
 
-        if (players[0] != null && players[1] != null)
+        if( players[0] != null && players[1] != null )
         {
             pos1 = players[0].transform.position.x;
             pos2 = players[1].transform.position.x;
@@ -351,103 +352,103 @@ public class Game_Manager : MonoBehaviour
 
         distance = pos1 - pos2;             //get distance of the players
 
-        IsPlayerBehindWarnings(distance);   //get warnings
+        IsPlayerBehindWarnings( distance );   //get warnings
 
 
         //Disable ui warning if players are within range
-        if (distance > -15f && distance < 15f)
+        if( distance > -15f && distance < 15f )
         {
-            uiPlayerWarning.gameObject.SetActive(false);
+            uiPlayerWarning.gameObject.SetActive( false );
         }
     }
-    void IsPlayerBehindWarnings(float distance)
+    void IsPlayerBehindWarnings( float distance )
     {
         //Warnings
 
         //PlayerHandler 1 Check
-        if (distance < -32f)
+        if( distance < -32f )
         {
-            uiPlayerWarning.text =  showP1Name.text+" don't fall too far behind!";
-            uiPlayerWarning.gameObject.SetActive(true);
+            uiPlayerWarning.text = showP1Name.text + " don't fall too far behind!";
+            uiPlayerWarning.gameObject.SetActive( true );
         }
 
         //PlayerHandler 2 Check
-        if (distance > 32f)
+        if( distance > 32f )
         {
-            uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = showP2Name.text+" Player2 don't fall too far behind!";
+            uiPlayerWarning.gameObject.SetActive( true );
+            uiPlayerWarning.text = showP2Name.text + " Player2 don't fall too far behind!";
         }
 
         //////////////////////////////////////////////////////////////////////
         //Check if players have fell behind too much
-        switch (curState)
+        switch( curState )
         {
-            case GameState.Phase1_Start:
-                {
-                    if (distance < -42f)//if player 1 has fell behind
-                    {
-                        players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
-                        players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
-                        isPhase2 = true;
-                        Destroy(altar);
-                    }
+        case GameState.Phase1_Start:
+        {
+            if( distance < -42f )//if player 1 has fell behind
+            {
+                players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
+                players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
+                isPhase2 = true;
+                Destroy( altar );
+            }
 
-                    if (distance > 42f)//if player 2 has fell behind
-                    {
-                        players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
-                        players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
-                        isPhase2 = true;
-                        Destroy(altar);
-                    }
-                    break;
-                }
-            case GameState.Phase2_Start:
-                {
-                    if (distance < -42f)//if player 1 has fell behind
-                    {
-                        curState = GameState.End;
-                        Destroy(players[0]);
-                    }
+            if( distance > 42f )//if player 2 has fell behind
+            {
+                players[0].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Chaser;
+                players[1].GetComponent<PlayerHandler>().myRole = PlayerHandler.Role.Runner;
+                isPhase2 = true;
+                Destroy( altar );
+            }
+            break;
+        }
+        case GameState.Phase2_Start:
+        {
+            if( distance < -42f )//if player 1 has fell behind
+            {
+                curState = GameState.End;
+                Destroy( players[0] );
+            }
 
-                    if (distance > 42f)//if player 2 has fell behind
-                    {
-                        curState = GameState.End;
-                        Destroy(players[1]);
-                    }
-                    break;
-                }
+            if( distance > 42f )//if player 2 has fell behind
+            {
+                curState = GameState.End;
+                Destroy( players[1] );
+            }
+            break;
+        }
         }
     }
 
     //Check if player died from level environments
     void CheckDeath()
     {
-        if (players[0] != null)//Check if player 1 has fell from a pit
+        if( players[0] != null )//Check if player 1 has fell from a pit
         {
-            if (players[0].transform.position.y <= -10f)
+            if( players[0].transform.position.y <= -10f )
             {
-                gameOverImg.gameObject.SetActive(true);
+                gameOverImg.gameObject.SetActive( true );
                 winText.text = showP2Name.text + " Won the Game !";
-                winText.gameObject.SetActive(true);
-                playerWin.Play(); 
-
-                curState = GameState.End;
-
-                Destroy(players[0]);
-            }
-        }
-
-        if (players[1] != null)//Check if player 2 has fell from a pit
-        {
-            if (players[1].transform.position.y <= -10f)
-            {
-                gameOverImg.gameObject.SetActive(true);
-                winText.text = showP1Name.text + " Won the Game !";
-                winText.gameObject.SetActive(true);
+                winText.gameObject.SetActive( true );
                 playerWin.Play();
 
                 curState = GameState.End;
-                Destroy(players[1]);
+
+                Destroy( players[0] );
+            }
+        }
+
+        if( players[1] != null )//Check if player 2 has fell from a pit
+        {
+            if( players[1].transform.position.y <= -10f )
+            {
+                gameOverImg.gameObject.SetActive( true );
+                winText.text = showP1Name.text + " Won the Game !";
+                winText.gameObject.SetActive( true );
+                playerWin.Play();
+
+                curState = GameState.End;
+                Destroy( players[1] );
             }
         }
     }
@@ -457,7 +458,7 @@ public class Game_Manager : MonoBehaviour
     {
         flag = altar.GetComponent<Altar>().Justflag();
 
-        if (flag == 1)
+        if( flag == 1 )
         {
             daggarText.text = "Player 1 got the Daggar!";
 
@@ -465,11 +466,11 @@ public class Game_Manager : MonoBehaviour
 
             showP2Name.text = showP1Name.text + " Runner!";
 
-            Destroy(daggarText, 5f);
+            Destroy( daggarText, 5f );
 
 
         }
-        else if (flag == 2)
+        else if( flag == 2 )
         {
             daggarText.text = "Player 2 got the Daggar!";
 
@@ -478,7 +479,7 @@ public class Game_Manager : MonoBehaviour
             showP1Name.text = showP1Name.text + " Runner!";
 
 
-            Destroy(daggarText, 5f);
+            Destroy( daggarText, 5f );
         }
 
     }
@@ -487,8 +488,8 @@ public class Game_Manager : MonoBehaviour
 
     void gameStartClick()
     {
-        uiInstructions.gameObject.SetActive(true);
-        startScreen.gameObject.SetActive(false);
+        uiInstructions.gameObject.SetActive( true );
+        startScreen.gameObject.SetActive( false );
     }
 
     void getPlayerName()
