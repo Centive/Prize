@@ -24,11 +24,33 @@ public class Game_Manager : MonoBehaviour
     public Text uiGameOver;
     public Image uiInstructions;
 
+    public Canvas startScreen;
+    public InputField getP1Name;
+    public InputField getP2Name;
+
+    public GameObject playerNameCanvas;
+    public Button startButton;
+    public Text showP1Name;
+    public Text showP2Name;
+
+
+    //GameOver
+    public Image gameOverImg;
+    public Text winText;
+
+    //SFX
+    private AudioSource[] BGMSFX;
+    private AudioSource BGM;
+    private AudioSource playerWin;
+    private AudioSource phase2SFX;
+    private AudioSource startScreenSFX;
+
+
     //who got the daggar
     public Text daggarText;
-    
-    private int flag=0;
-  
+
+    private int flag = 0;
+
 
     //gameobjects
     public GameObject prefabPlayer;
@@ -50,16 +72,29 @@ public class Game_Manager : MonoBehaviour
 
     void Start()
     {
+        //audio
+        BGMSFX = GameObject.Find("BGM").GetComponents<AudioSource>();
+        BGM = BGMSFX[0];
+        playerWin = BGMSFX[1];
+        phase2SFX = BGMSFX[2];
+        startScreenSFX = BGMSFX[3];
+
+
+        startScreenSFX.Play();
+
         //init components/gameobjects
         players = GameObject.FindGameObjectsWithTag("Player");
         altar = GameObject.FindGameObjectWithTag("Altar");
 
-        if(altar != null)//for testing purposes
+        if (altar != null)//for testing purposes
             halfwayPoint = altar.transform;
 
         //init variables
         curState = GameState.Phase1_Pause;
-        uiInstructions.gameObject.SetActive(true);
+
+        startButton.onClick.AddListener(gameStartClick);
+
+
 
         if (players.Length == 2)
         {
@@ -87,7 +122,7 @@ public class Game_Manager : MonoBehaviour
             }
             IsPlayerBehind();
             GetState();
-           checkWhoGotDaggar();
+            checkWhoGotDaggar();
 
         }
 
@@ -108,7 +143,9 @@ public class Game_Manager : MonoBehaviour
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
                         uiInstructions.gameObject.SetActive(false);
+                        playerNameCanvas.gameObject.SetActive(true);
                         isPhase1Countdown = true;
+                        getPlayerName();
                     }
 
                     //Start Countdown
@@ -125,6 +162,10 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
+                            startScreenSFX.Pause();
+
+                            BGM.Play();
+
                         }
                     }
                     break;
@@ -216,6 +257,8 @@ public class Game_Manager : MonoBehaviour
         //Move the runner 5 units infront of the chaser
         if (isPhase2)
         {
+            phase2SFX.Play();
+            BGM.Pause();
             //Check for other players
             if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
@@ -245,7 +288,10 @@ public class Game_Manager : MonoBehaviour
             //Check if the chaser has won
             if (players[0].transform.InverseTransformPoint(players[1].transform.position).x >= 0)
             {
+               
+
                 curState = GameState.End;
+
                 Destroy(players[1]);
             }
         }
@@ -255,6 +301,8 @@ public class Game_Manager : MonoBehaviour
             //Check if the chaser has won
             if (players[1].transform.InverseTransformPoint(players[0].transform.position).x >= 0)
             {
+               
+
                 curState = GameState.End;
                 Destroy(players[0]);
             }
@@ -266,7 +314,11 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[0].transform.position.x >= 870f)
             {
+                gameOverImg.gameObject.SetActive(true);
+                playerWin.Play();
+
                 curState = GameState.End;
+
                 Destroy(players[1]);
             }
         }
@@ -275,6 +327,9 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[1].transform.position.x >= 870f)
             {
+                gameOverImg.gameObject.SetActive(true);
+                playerWin.Play();
+
                 curState = GameState.End;
                 Destroy(players[0]);
             }
@@ -312,7 +367,7 @@ public class Game_Manager : MonoBehaviour
         //PlayerHandler 1 Check
         if (distance < -32f)
         {
-            uiPlayerWarning.text = "Player1 don't fall too far behind!";
+            uiPlayerWarning.text =  showP1Name.text+" don't fall too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
 
@@ -320,7 +375,7 @@ public class Game_Manager : MonoBehaviour
         if (distance > 32f)
         {
             uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = "Player2 don't fall too far behind!";
+            uiPlayerWarning.text = showP2Name.text+" Player2 don't fall too far behind!";
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -371,7 +426,13 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[0].transform.position.y <= -10f)
             {
+                gameOverImg.gameObject.SetActive(true);
+                winText.text = showP2Name.text + " Won the Game !";
+                winText.gameObject.SetActive(true);
+                playerWin.Play(); 
+
                 curState = GameState.End;
+
                 Destroy(players[0]);
             }
         }
@@ -380,6 +441,11 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[1].transform.position.y <= -10f)
             {
+                gameOverImg.gameObject.SetActive(true);
+                winText.text = showP1Name.text + " Won the Game !";
+                winText.gameObject.SetActive(true);
+                playerWin.Play();
+
                 curState = GameState.End;
                 Destroy(players[1]);
             }
@@ -392,8 +458,13 @@ public class Game_Manager : MonoBehaviour
         flag = altar.GetComponent<Altar>().Justflag();
 
         if (flag == 1)
-        {  
+        {
             daggarText.text = "Player 1 got the Daggar!";
+
+            showP1Name.text = showP1Name.text + " Chaser!";
+
+            showP2Name.text = showP1Name.text + " Runner!";
+
             Destroy(daggarText, 5f);
 
 
@@ -401,8 +472,31 @@ public class Game_Manager : MonoBehaviour
         else if (flag == 2)
         {
             daggarText.text = "Player 2 got the Daggar!";
+
+            showP2Name.text = showP1Name.text + " Chaser!";
+
+            showP1Name.text = showP1Name.text + " Runner!";
+
+
             Destroy(daggarText, 5f);
         }
-      
+
+    }
+
+    //
+
+    void gameStartClick()
+    {
+        uiInstructions.gameObject.SetActive(true);
+        startScreen.gameObject.SetActive(false);
+    }
+
+    void getPlayerName()
+    {
+        //getPlayerName
+
+        showP1Name.text = getP1Name.text;
+        showP2Name.text = getP2Name.text;
+
     }
 }
