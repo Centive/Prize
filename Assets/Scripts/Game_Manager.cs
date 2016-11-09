@@ -73,6 +73,7 @@ public class Game_Manager : MonoBehaviour
     {
         //Audio
         BGMSFX = GameObject.Find("BGM").GetComponents<AudioSource>();
+
         BGM = BGMSFX[0];
         playerWin = BGMSFX[1];
         phase2SFX = BGMSFX[2];
@@ -190,7 +191,7 @@ public class Game_Manager : MonoBehaviour
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
                             BGM.Play();
-
+                            startScreenSFX.Pause();
                         }
                     }
                     break;
