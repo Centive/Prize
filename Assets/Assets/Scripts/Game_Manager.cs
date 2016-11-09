@@ -48,12 +48,11 @@ public class Game_Manager : MonoBehaviour
 
     //who got the daggar
     public Text daggarText;
-
-    private int flag = 0;
-
+    
+    private int flag=0;
+  
 
     //gameobjects
-    public GameObject prefabPlayer;
     public GameObject[] players;
     private GameObject altar;
     private Transform halfwayPoint;
@@ -72,34 +71,31 @@ public class Game_Manager : MonoBehaviour
 
     void Start()
     {
-        //audio
+        //Audio
         BGMSFX = GameObject.Find("BGM").GetComponents<AudioSource>();
         BGM = BGMSFX[0];
         playerWin = BGMSFX[1];
         phase2SFX = BGMSFX[2];
         startScreenSFX = BGMSFX[3];
 
-
         startScreenSFX.Play();
 
         //init components/gameobjects
-        players = GameObject.FindGameObjectsWithTag("Player");
+        players = GameObject.FindGameObjectsWithTag("Human");
         altar = GameObject.FindGameObjectWithTag("Altar");
 
-        if (altar != null)//for testing purposes
+        if(altar != null)//for testing purposes
             halfwayPoint = altar.transform;
 
         //init variables
         curState = GameState.Phase1_Pause;
-
         startButton.onClick.AddListener(gameStartClick);
-
 
 
         if (players.Length == 2)
         {
-            player1Speed = players[0].GetComponent<PlayerController>().movSpeed;  //Set player speed
-            player2Speed = players[1].GetComponent<PlayerController>().movSpeed;  //Set player speed
+            player1Speed = players[0].GetComponent<PlayerController>().maxSpeed;  //Set player speed
+            player2Speed = players[1].GetComponent<PlayerController>().maxSpeed;  //Set player speed
         }
 
     }
@@ -122,7 +118,7 @@ public class Game_Manager : MonoBehaviour
             }
             IsPlayerBehind();
             GetState();
-            checkWhoGotDaggar();
+           checkWhoGotDaggar();
 
         }
 
@@ -144,8 +140,9 @@ public class Game_Manager : MonoBehaviour
                     {
                         uiInstructions.gameObject.SetActive(false);
                         playerNameCanvas.gameObject.SetActive(true);
-                        isPhase1Countdown = true;
+                        uiInstructions.gameObject.SetActive(false);
                         getPlayerName();
+                        isPhase1Countdown = true;
                     }
 
                     //Start Countdown
@@ -162,10 +159,6 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
-                            startScreenSFX.Pause();
-
-                            BGM.Play();
-
                         }
                     }
                     break;
@@ -196,6 +189,8 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
+                            BGM.Play();
+
                         }
                     }
                     break;
@@ -257,11 +252,10 @@ public class Game_Manager : MonoBehaviour
         //Move the runner 5 units infront of the chaser
         if (isPhase2)
         {
-            phase2SFX.Play();
-            BGM.Pause();
             //Check for other players
             if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
+                Debug.Log("FUUUUUUUUU");
                 players[0].transform.position = halfwayPoint.position;
                 players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
@@ -286,12 +280,9 @@ public class Game_Manager : MonoBehaviour
         if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
         {
             //Check if the chaser has won
-            if (players[0].transform.InverseTransformPoint(players[1].transform.position).x >= 0)
+            if (players[0].transform.InverseTransformPoint(players[1].transform.position).x <= 0)
             {
-               
-
                 curState = GameState.End;
-
                 Destroy(players[1]);
             }
         }
@@ -299,10 +290,8 @@ public class Game_Manager : MonoBehaviour
         if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
         {
             //Check if the chaser has won
-            if (players[1].transform.InverseTransformPoint(players[0].transform.position).x >= 0)
+            if (players[1].transform.InverseTransformPoint(players[0].transform.position).x <= 0)
             {
-               
-
                 curState = GameState.End;
                 Destroy(players[0]);
             }
@@ -314,11 +303,7 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[0].transform.position.x >= 870f)
             {
-                gameOverImg.gameObject.SetActive(true);
-                playerWin.Play();
-
                 curState = GameState.End;
-
                 Destroy(players[1]);
             }
         }
@@ -327,9 +312,6 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[1].transform.position.x >= 870f)
             {
-                gameOverImg.gameObject.SetActive(true);
-                playerWin.Play();
-
                 curState = GameState.End;
                 Destroy(players[0]);
             }
@@ -367,7 +349,7 @@ public class Game_Manager : MonoBehaviour
         //PlayerHandler 1 Check
         if (distance < -32f)
         {
-            uiPlayerWarning.text =  showP1Name.text+" don't fall too far behind!";
+            uiPlayerWarning.text = showP1Name.text + " don't fall too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
         }
 
@@ -375,7 +357,7 @@ public class Game_Manager : MonoBehaviour
         if (distance > 32f)
         {
             uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = showP2Name.text+" Player2 don't fall too far behind!";
+            uiPlayerWarning.text = showP2Name.text + " Player2 don't fall too far behind!";
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -429,10 +411,10 @@ public class Game_Manager : MonoBehaviour
                 gameOverImg.gameObject.SetActive(true);
                 winText.text = showP2Name.text + " Won the Game !";
                 winText.gameObject.SetActive(true);
-                playerWin.Play(); 
+                playerWin.Play();
+
 
                 curState = GameState.End;
-
                 Destroy(players[0]);
             }
         }
@@ -445,6 +427,7 @@ public class Game_Manager : MonoBehaviour
                 winText.text = showP1Name.text + " Won the Game !";
                 winText.gameObject.SetActive(true);
                 playerWin.Play();
+
 
                 curState = GameState.End;
                 Destroy(players[1]);
@@ -459,31 +442,27 @@ public class Game_Manager : MonoBehaviour
 
         if (flag == 1)
         {
-            daggarText.text = "Player 1 got the Daggar!";
+            daggarText.text = showP1Name.text + " got the Daggar!";
 
             showP1Name.text = showP1Name.text + " Chaser!";
 
-            showP2Name.text = showP1Name.text + " Runner!";
-
+            showP2Name.text = showP2Name.text + " Runner!";
             Destroy(daggarText, 5f);
 
 
         }
         else if (flag == 2)
         {
-            daggarText.text = "Player 2 got the Daggar!";
+            daggarText.text = showP2Name.text + " got the Daggar!";
 
-            showP2Name.text = showP1Name.text + " Chaser!";
+            showP2Name.text = showP2Name.text + " Chaser!";
 
             showP1Name.text = showP1Name.text + " Runner!";
 
-
             Destroy(daggarText, 5f);
         }
-
+      
     }
-
-    //
 
     void gameStartClick()
     {
@@ -494,6 +473,8 @@ public class Game_Manager : MonoBehaviour
     void getPlayerName()
     {
         //getPlayerName
+        Debug.Log(getP1Name.text);
+        Debug.Log(getP2Name.text);
 
         showP1Name.text = getP1Name.text;
         showP2Name.text = getP2Name.text;
