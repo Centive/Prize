@@ -65,7 +65,7 @@ public class platform_up_down : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.tag == "Player")
+        if (col.gameObject.tag == "Human")
         {
             flag = true;
         }
