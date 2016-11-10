@@ -21,8 +21,6 @@ public class Camera_FollowMiddle : MonoBehaviour
 
         p1T = p1.transform;
         p2T = p2.transform;
-
-
     }
 
     // Update is called once per frame
@@ -35,8 +33,7 @@ public class Camera_FollowMiddle : MonoBehaviour
     {
         float distanceX;
         float distanceY;
-
-
+        
         if (p1 != null && p2 != null)
         {
             cameraT.position = this.transform.position;
