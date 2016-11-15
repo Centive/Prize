@@ -13,9 +13,8 @@ public class Game_Manager : MonoBehaviour
         Phase1_Start,
         Phase2_Pause,
         Phase2_Start,
-        End,
-        EndRunner,
-        EndChaser
+        EndScene,
+        EndMenu
     }
 
     //Game UI
@@ -37,6 +36,13 @@ public class Game_Manager : MonoBehaviour
     //GameOver
     public Image gameOverImg;
     public Text winText;
+    public GameObject EndingCutscene1_prefab;
+    public GameObject EndingCutscene2_prefab;
+    private GameObject endAnimation;
+    public Image p1RunnerWin_prefab;
+    public Image p1ChaserWin_prefab;
+    public Image p2RunnerWin_prefab;
+    public Image p2ChaserWin_prefab;
 
     //SFX
     private AudioSource[] BGMSFX;
@@ -48,9 +54,9 @@ public class Game_Manager : MonoBehaviour
 
     //who got the daggar
     public Text daggarText;
-    
-    private int flag=0;
-  
+
+    private int flag = 0;
+
 
     //gameobjects
     public GameObject[] players;
@@ -67,7 +73,7 @@ public class Game_Manager : MonoBehaviour
                         player2Speed = 0;
     private float phase1Timer = 6f,
                         phase2Timer = 6f;
-
+    public float runnerEndPosition = 870f;
 
     void Start()
     {
@@ -85,7 +91,7 @@ public class Game_Manager : MonoBehaviour
         players = GameObject.FindGameObjectsWithTag("Human");
         altar = GameObject.FindGameObjectWithTag("Altar");
 
-        if(altar != null)//for testing purposes
+        if (altar != null)//for testing purposes
             halfwayPoint = altar.transform;
 
         //init variables
@@ -109,7 +115,7 @@ public class Game_Manager : MonoBehaviour
             {
                 Application.Quit();
             }
-            if (curState == GameState.End)
+            if (curState == GameState.EndScene)
             {
                 //redo Game
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -119,7 +125,7 @@ public class Game_Manager : MonoBehaviour
             }
             IsPlayerBehind();
             GetState();
-           checkWhoGotDaggar();
+            checkWhoGotDaggar();
 
         }
 
@@ -203,45 +209,157 @@ public class Game_Manager : MonoBehaviour
                     CheckRunnerWin();
                     break;
                 }
-            case GameState.End:
+            case GameState.EndScene:
                 {
-                    uiGameOver.gameObject.SetActive(true);
+                    // uiGameOver.gameObject.SetActive(true);
+                    // if (players[0] != null)
+                    // {
+                    //     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+                    //     {
+                    //         uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
+                    //     }
+                    //     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    //     {
+                    //         uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
+                    //     }
+                    // }
+                    //
+                    // if (players[1] != null)
+                    // {
+                    //     if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+                    //     {
+                    //         uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
+                    //     }
+                    //     if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    //     {
+                    //         uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
+                    //     }
+                    // }
+                    // //redo Game
+                    // if (Input.GetKeyDown(KeyCode.Space))
+                    // {
+                    //     SceneManager.LoadScene("Testing_Area");
+                    // }
+                    //
+                    // //Runner stop at end
+                    // if (players[0] != null)
+                    //     if (players[0].transform.position.x >= 880f)
+                    //         players[0].GetComponent<PlayerController>().movSpeed = 0;
+                    // if (players[1] != null)
+                    //     if (players[1].transform.position.x >= 880f)
+                    //         players[1].GetComponent<PlayerController>().movSpeed = 0;
+
+                    /* - Check which player is alive
+                     * - Check the player's role
+                     * - Depending on the role play that role's win animation
+                     * 
+                     * Chaser:
+                     * - fade 
+                     * - disable main camera
+                     * - play end animation
+                     * 
+                     * *Note* new main camera is in the end animation obj's children:: That is the new main camera
+                     * 
+                     * Runner:
+                     * - Nothing
+                     */
+
                     if (players[0] != null)
                     {
-                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+                        players[0].GetComponent<PlayerController>().movSpeed = 0;//disable speed
+                        switch (players[0].GetComponent<PlayerHandler>().myRole)
                         {
-                            uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
-                        }
-                        if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                        {
-                            uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
+                            //Do chaser win animation
+                            case PlayerHandler.Role.Chaser:
+                                {
+                                    this.GetComponent<Fade>().BeginFade();
+                                    if (Camera.main != null)
+                                        Camera.main.enabled = false;
+                                    endAnimation = GameObject.Instantiate(EndingCutscene2_prefab, transform.position, Quaternion.identity) as GameObject;
+                                    break;
+                                }
+                            //Do runner win animation
+                            case PlayerHandler.Role.Runner:
+                                {
+                                    //nothing
+                                    break;
+                                }
                         }
                     }
-
                     if (players[1] != null)
                     {
-                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
+                        players[1].GetComponent<PlayerController>().movSpeed = 0;//disable speed
+                        switch (players[1].GetComponent<PlayerHandler>().myRole)
                         {
-                            uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
+                            //Do chaser win animation
+                            case PlayerHandler.Role.Chaser:
+                                {
+                                    this.GetComponent<Fade>().BeginFade();
+                                    if (Camera.main != null)
+                                        Camera.main.enabled = false;
+                                    endAnimation = GameObject.Instantiate(EndingCutscene1_prefab, transform.position, Quaternion.identity) as GameObject;
+                                    break;
+                                }
+                            //Do runner win animation
+                            case PlayerHandler.Role.Runner:
+                                {
+                                    //nothing
+                                    break;
+                                }
                         }
-                        if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                        {
-                            uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
-                        }
+                        
                     }
-                    //redo Game
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        SceneManager.LoadScene("Testing_Area");
-                    }
-
-                    //Runner stop at end
+                    curState = GameState.EndMenu;
+                    break;
+                }
+            case GameState.EndMenu:
+                {
+                    /* - Check which player is alive
+                     * - Check if that player is a chaser or runner role
+                     * - Check if end animation is finished
+                     * - Turn on a endScreen prefab depending on role
+                     * 
+                     * *NOTE* no end animation for runner
+                     */
                     if (players[0] != null)
-                        if (players[0].transform.position.x >= 880f)
-                            players[0].GetComponent<PlayerController>().movSpeed = 0;
+                    {
+                        switch (players[0].GetComponent<PlayerHandler>().myRole)
+                        {
+                            case PlayerHandler.Role.Chaser:
+                                {
+                                    if (!endAnimation.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("EndAnim"))
+                                    {
+                                        p2ChaserWin_prefab.gameObject.SetActive(true);
+                                    }
+                                    break;
+                                }
+                            case PlayerHandler.Role.Runner:
+                                {
+                                    p2RunnerWin_prefab.gameObject.SetActive(true);
+                                    break;
+                                }
+                        }
+                    }
                     if (players[1] != null)
-                        if (players[1].transform.position.x >= 880f)
-                            players[1].GetComponent<PlayerController>().movSpeed = 0;
+                    {
+                        switch (players[1].GetComponent<PlayerHandler>().myRole)
+                        {
+                            case PlayerHandler.Role.Chaser:
+                                {
+                                    if (!endAnimation.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("EndAnim"))
+                                    {
+                                        p1ChaserWin_prefab.gameObject.SetActive(true);
+                                    }
+                                    break;
+                                }
+                            case PlayerHandler.Role.Runner:
+                                {
+                                    p1RunnerWin_prefab.gameObject.SetActive(true);
+                                    break;
+                                }
+                        }
+                    }
+                    
                     break;
                 }
         }
@@ -256,7 +374,6 @@ public class Game_Manager : MonoBehaviour
             //Check for other players
             if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
-                Debug.Log("FUUUUUUUUU");
                 players[0].transform.position = halfwayPoint.position;
                 players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
@@ -283,7 +400,7 @@ public class Game_Manager : MonoBehaviour
             //Check if the chaser has won
             if (players[0].transform.InverseTransformPoint(players[1].transform.position).x <= 0)
             {
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[1]);
             }
         }
@@ -293,7 +410,7 @@ public class Game_Manager : MonoBehaviour
             //Check if the chaser has won
             if (players[1].transform.InverseTransformPoint(players[0].transform.position).x <= 0)
             {
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[0]);
             }
         }
@@ -302,18 +419,18 @@ public class Game_Manager : MonoBehaviour
     {
         if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
         {
-            if (players[0].transform.position.x >= 870f)
+            if (players[0].transform.position.x >= runnerEndPosition)
             {
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[1]);
             }
         }
 
         if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
         {
-            if (players[1].transform.position.x >= 870f)
+            if (players[1].transform.position.x >= runnerEndPosition)
             {
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[0]);
             }
         }
@@ -388,13 +505,13 @@ public class Game_Manager : MonoBehaviour
                 {
                     if (distance < -42f)//if player 1 has fell behind
                     {
-                        curState = GameState.End;
+                        curState = GameState.EndScene;
                         Destroy(players[0]);
                     }
 
                     if (distance > 42f)//if player 2 has fell behind
                     {
-                        curState = GameState.End;
+                        curState = GameState.EndScene;
                         Destroy(players[1]);
                     }
                     break;
@@ -415,7 +532,7 @@ public class Game_Manager : MonoBehaviour
                 playerWin.Play();
 
 
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[0]);
             }
         }
@@ -430,7 +547,7 @@ public class Game_Manager : MonoBehaviour
                 playerWin.Play();
 
 
-                curState = GameState.End;
+                curState = GameState.EndScene;
                 Destroy(players[1]);
             }
         }
@@ -440,29 +557,31 @@ public class Game_Manager : MonoBehaviour
     void checkWhoGotDaggar()
     {
         flag = altar.GetComponent<Altar>().Justflag();
-
-        if (flag == 1)
+        if (daggarText != null)
         {
-            daggarText.text = showP1Name.text + " got the Daggar!";
 
-            showP1Name.text = showP1Name.text + " Chaser!";
+            if (flag == 1)
+            {
+                daggarText.text = showP1Name.text + " got the Daggar!";
 
-            showP2Name.text = showP2Name.text + " Runner!";
-            Destroy(daggarText, 5f);
+                showP1Name.text = showP1Name.text + " Chaser!";
+
+                showP2Name.text = showP2Name.text + " Runner!";
+                Destroy(daggarText, 5f);
 
 
+            }
+            else if (flag == 2)
+            {
+                daggarText.text = showP2Name.text + " got the Daggar!";
+
+                showP2Name.text = showP2Name.text + " Chaser!";
+
+                showP1Name.text = showP1Name.text + " Runner!";
+
+                Destroy(daggarText, 5f);
+            }
         }
-        else if (flag == 2)
-        {
-            daggarText.text = showP2Name.text + " got the Daggar!";
-
-            showP2Name.text = showP2Name.text + " Chaser!";
-
-            showP1Name.text = showP1Name.text + " Runner!";
-
-            Destroy(daggarText, 5f);
-        }
-      
     }
 
     void gameStartClick()
@@ -481,4 +600,5 @@ public class Game_Manager : MonoBehaviour
         showP2Name.text = getP2Name.text;
 
     }
+    
 }
