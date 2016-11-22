@@ -46,11 +46,17 @@ public class Game_Manager : MonoBehaviour
 
     //SFX
     private AudioSource[] BGMSFX;
-    private AudioSource BGM;
-    private AudioSource playerWin;
+    private AudioSource startScreenBGM;
     private AudioSource phase2SFX;
-    private AudioSource startScreenSFX;
+    private AudioSource phase1SFX;
+    private AudioSource playerBehindSFX;
+    private AudioSource getDaggarSFX;
+    private AudioSource pressStartSFX;
 
+    private AudioSource endBGM;
+    //player sfx
+    private AudioSource dieSFX;
+    private AudioSource playerWin;
 
     //who got the daggar
     public Text daggarText;
@@ -80,12 +86,16 @@ public class Game_Manager : MonoBehaviour
         //Audio
         BGMSFX = GameObject.Find("BGM").GetComponents<AudioSource>();
 
-        BGM = BGMSFX[0];
-        playerWin = BGMSFX[1];
+        startScreenBGM = BGMSFX[0];
+        phase1SFX = BGMSFX[1];
         phase2SFX = BGMSFX[2];
-        startScreenSFX = BGMSFX[3];
-
-        startScreenSFX.Play();
+        playerWin = BGMSFX[3];
+        dieSFX = BGMSFX[4];
+        playerBehindSFX = BGMSFX[5];
+        getDaggarSFX = BGMSFX[6];
+        pressStartSFX = BGMSFX[7];
+        endBGM = BGMSFX[8];
+        startScreenBGM.Play();
 
         //init components/gameobjects
         players = GameObject.FindGameObjectsWithTag("Human");
@@ -97,7 +107,6 @@ public class Game_Manager : MonoBehaviour
         //init variables
         curState = GameState.Phase1_Pause;
         startButton.onClick.AddListener(gameStartClick);
-
 
         if (players.Length == 2)
         {
@@ -145,6 +154,7 @@ public class Game_Manager : MonoBehaviour
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
+                       
                         uiInstructions.gameObject.SetActive(false);
                         playerNameCanvas.gameObject.SetActive(true);
                         uiInstructions.gameObject.SetActive(false);
@@ -166,6 +176,11 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
+                            pressStartSFX.Play();
+
+                            //Audio
+                            phase1SFX.Play();
+                            startScreenBGM.Pause();
                         }
                     }
                     break;
@@ -196,8 +211,9 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
-                            BGM.Play();
-                            startScreenSFX.Pause();
+                            //Audio
+                            phase2SFX.Play();
+                            phase1SFX.Pause();
                         }
                     }
                     break;
@@ -307,8 +323,9 @@ public class Game_Manager : MonoBehaviour
                                     break;
                                 }
                         }
-                        
+
                     }
+                   
                     curState = GameState.EndMenu;
                     break;
                 }
@@ -321,6 +338,12 @@ public class Game_Manager : MonoBehaviour
                      * 
                      * *NOTE* no end animation for runner
                      */
+                     //AUDIO
+                    startScreenBGM.Pause();
+                    phase1SFX.Pause();
+                    phase2SFX.Pause();
+                    endBGM.Play();
+
                     if (players[0] != null)
                     {
                         switch (players[0].GetComponent<PlayerHandler>().myRole)
@@ -359,7 +382,7 @@ public class Game_Manager : MonoBehaviour
                                 }
                         }
                     }
-                    
+
                     break;
                 }
         }
@@ -469,6 +492,7 @@ public class Game_Manager : MonoBehaviour
         {
             uiPlayerWarning.text = showP1Name.text + " don't fall too far behind!";
             uiPlayerWarning.gameObject.SetActive(true);
+            playerBehindSFX.Play();
         }
 
         //PlayerHandler 2 Check
@@ -476,6 +500,8 @@ public class Game_Manager : MonoBehaviour
         {
             uiPlayerWarning.gameObject.SetActive(true);
             uiPlayerWarning.text = showP2Name.text + " Player2 don't fall too far behind!";
+            playerBehindSFX.Play();
+
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -526,11 +552,11 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[0].transform.position.y <= -10f)
             {
-                gameOverImg.gameObject.SetActive(true);
+                // gameOverImg.gameObject.SetActive(true);
                 winText.text = showP2Name.text + " Won the Game !";
-                winText.gameObject.SetActive(true);
-                playerWin.Play();
-
+                //   winText.gameObject.SetActive(true);
+                // playerWin.Play();
+                DeathGUIsfx();
 
                 curState = GameState.EndScene;
                 Destroy(players[0]);
@@ -541,16 +567,31 @@ public class Game_Manager : MonoBehaviour
         {
             if (players[1].transform.position.y <= -10f)
             {
-                gameOverImg.gameObject.SetActive(true);
+                // gameOverImg.gameObject.SetActive(true);
                 winText.text = showP1Name.text + " Won the Game !";
-                winText.gameObject.SetActive(true);
-                playerWin.Play();
+                //  winText.gameObject.SetActive(true);
+                //  playerWin.Play();
 
+                DeathGUIsfx();
 
                 curState = GameState.EndScene;
                 Destroy(players[1]);
             }
         }
+    }
+
+    void DeathGUIsfx()
+    {
+        playerNameCanvas.gameObject.SetActive(false);
+        dieSFX.Play();
+        phase1SFX.Pause();
+        phase2SFX.Pause();
+        playerWin.PlayDelayed(1.2F);
+        winText.gameObject.SetActive(true);
+
+        gameOverImg.gameObject.SetActive(true);
+
+
     }
 
     //Daggar
@@ -581,11 +622,15 @@ public class Game_Manager : MonoBehaviour
 
                 Destroy(daggarText, 5f);
             }
+
+            getDaggarSFX.Play();
         }
     }
 
     void gameStartClick()
     {
+       
+
         uiInstructions.gameObject.SetActive(true);
         startScreen.gameObject.SetActive(false);
     }
@@ -600,5 +645,5 @@ public class Game_Manager : MonoBehaviour
         showP2Name.text = getP2Name.text;
 
     }
-    
+
 }

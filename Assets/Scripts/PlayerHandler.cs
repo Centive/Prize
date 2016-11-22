@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerHandler : MonoBehaviour
 {
@@ -60,12 +61,12 @@ public class PlayerHandler : MonoBehaviour
     private AudioSource platformSlow;
     private AudioSource platformFast;
 
-    private AudioSource slideObs;
-    private AudioSource jumpObs;
 
     private AudioSource dodgedOb;
     private AudioSource powerUpGet;
 
+    //UI
+    public Image[] powerUpCountImg;
 
     void Start()
     {
@@ -87,8 +88,8 @@ public class PlayerHandler : MonoBehaviour
         slopeUpsource = collisionSFX[1];
         platformFast = collisionSFX[2];
         platformSlow = collisionSFX[3];
-        slideObs = collisionSFX[4];
-        jumpObs = collisionSFX[5];
+
+
         dodgedOb = dodgeAudioSources[0];
         powerUpGet = dodgeAudioSources[1];
 
@@ -231,6 +232,8 @@ public class PlayerHandler : MonoBehaviour
             if (curAvoids != maxAvoids - 1)
             {
                 dodgedOb.Play();//play dodge ob
+  
+                powerUpCountImg[curAvoids - 1].gameObject.SetActive(true);
             }
         }
 

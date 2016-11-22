@@ -34,7 +34,8 @@ public class PlayerController : MonoBehaviour
     private AudioSource dropObstacleSfx;
     private AudioSource shieldSfx;
     private AudioSource speedSfx;
-
+    //Controls audio
+    public AudioSource[] playerControlAudios;
     //jump slide audio
     private AudioSource jumpSFX;
     private AudioSource slideSFX;
@@ -48,15 +49,18 @@ public class PlayerController : MonoBehaviour
         myTrail = GetComponent<TrailRenderer>();
         playerHandler = GetComponent<PlayerHandler>();
         powerAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
-
+        playerControlAudios = GameObject.Find("PlayerControlSFX").GetComponents<AudioSource>();
         //init audio clips
         darkballSfx = powerAudios[0];
         dropObstacleSfx = powerAudios[1];
         shieldSfx = powerAudios[2];
         speedSfx = powerAudios[3];
-        jumpSFX = powerAudios[4];
-        slideSFX = powerAudios[5];
-        
+
+        //Control Audio
+        jumpSFX = playerControlAudios[0];
+        slideSFX = playerControlAudios[1];
+
+
         //Init variables
         movSpeed = maxSpeed;
         playerHandler.myRole = PlayerHandler.Role.Runner;
