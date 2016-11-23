@@ -124,7 +124,7 @@ public class Game_Manager : MonoBehaviour
             {
                 Application.Quit();
             }
-            if (curState == GameState.EndScene)
+            if (curState == GameState.EndMenu)
             {
                 //redo Game
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -135,7 +135,6 @@ public class Game_Manager : MonoBehaviour
             IsPlayerBehind();
             GetState();
             checkWhoGotDaggar();
-
         }
 
     }
@@ -323,7 +322,6 @@ public class Game_Manager : MonoBehaviour
                                     break;
                                 }
                         }
-
                     }
                    
                     curState = GameState.EndMenu;
@@ -397,13 +395,13 @@ public class Game_Manager : MonoBehaviour
             //Check for other players
             if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
-                players[0].transform.position = halfwayPoint.position;
+                players[0].transform.position = halfwayPoint.position + new Vector3(55f, 0, 0);
                 players[1].transform.position = new Vector3(players[0].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
             if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
             {
-                players[1].transform.position = halfwayPoint.position;
+                players[1].transform.position = halfwayPoint.position + new Vector3(55f, 0, 0);
                 players[0].transform.position = new Vector3(players[1].transform.position.x + 5f, 0.0f, 0.0f);
             }
 
@@ -499,7 +497,7 @@ public class Game_Manager : MonoBehaviour
         if (distance > 32f)
         {
             uiPlayerWarning.gameObject.SetActive(true);
-            uiPlayerWarning.text = showP2Name.text + " Player2 don't fall too far behind!";
+            uiPlayerWarning.text = showP2Name.text + " don't fall too far behind!";
             playerBehindSFX.Play();
 
         }
@@ -553,12 +551,12 @@ public class Game_Manager : MonoBehaviour
             if (players[0].transform.position.y <= -10f)
             {
                 // gameOverImg.gameObject.SetActive(true);
-                winText.text = showP2Name.text + " Won the Game !";
+                winText.text = showP2Name.text + " won!";
                 //   winText.gameObject.SetActive(true);
                 // playerWin.Play();
                 DeathGUIsfx();
 
-                curState = GameState.EndScene;
+                curState = GameState.EndMenu;
                 Destroy(players[0]);
             }
         }
@@ -568,13 +566,13 @@ public class Game_Manager : MonoBehaviour
             if (players[1].transform.position.y <= -10f)
             {
                 // gameOverImg.gameObject.SetActive(true);
-                winText.text = showP1Name.text + " Won the Game !";
+                winText.text = showP1Name.text + " won!";
                 //  winText.gameObject.SetActive(true);
                 //  playerWin.Play();
 
                 DeathGUIsfx();
 
-                curState = GameState.EndScene;
+                curState = GameState.EndMenu;
                 Destroy(players[1]);
             }
         }
@@ -603,22 +601,14 @@ public class Game_Manager : MonoBehaviour
 
             if (flag == 1)
             {
-                daggarText.text = showP1Name.text + " got the Daggar!";
-
-                showP1Name.text = showP1Name.text + " Chaser!";
-
-                showP2Name.text = showP2Name.text + " Runner!";
+                daggarText.text = "Run, " + showP1Name.text + "!";
                 Destroy(daggarText, 5f);
 
 
             }
             else if (flag == 2)
             {
-                daggarText.text = showP2Name.text + " got the Daggar!";
-
-                showP2Name.text = showP2Name.text + " Chaser!";
-
-                showP1Name.text = showP1Name.text + " Runner!";
+                daggarText.text = "Run, " + showP2Name.text + "!";
 
                 Destroy(daggarText, 5f);
             }
@@ -629,8 +619,6 @@ public class Game_Manager : MonoBehaviour
 
     void gameStartClick()
     {
-       
-
         uiInstructions.gameObject.SetActive(true);
         startScreen.gameObject.SetActive(false);
     }

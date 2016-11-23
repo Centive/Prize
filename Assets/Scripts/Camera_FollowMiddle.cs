@@ -40,7 +40,7 @@ public class Camera_FollowMiddle : MonoBehaviour
 
             //average of x&y position
             distanceX = Mathf.Abs((p1T.position.x + p2T.position.x) / 2);
-            distanceY = Mathf.Abs((p1T.position.y + p2T.position.y) / 2 +4f);
+            distanceY = Mathf.Abs((p1T.position.y + p2T.position.y) / 2 + 1f);
             cameraT.position = new Vector3(distanceX, distanceY, -29.78f);
         }
     }

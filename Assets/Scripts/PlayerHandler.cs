@@ -50,6 +50,7 @@ public class PlayerHandler : MonoBehaviour
     public GameObject modelDagger;
     public GameObject modelLantern;
 
+    public ParticleSystem possession;
 
     //Sounds
     private AudioSource[] collisionSFX;
@@ -92,6 +93,8 @@ public class PlayerHandler : MonoBehaviour
 
         dodgedOb = dodgeAudioSources[0];
         powerUpGet = dodgeAudioSources[1];
+
+        possession = GetComponent<ParticleSystem>();
 
         //Disable models
         modelDagger.GetComponent<MeshRenderer>().enabled = false;
@@ -389,8 +392,7 @@ public class PlayerHandler : MonoBehaviour
 
         if (myRole == Role.Chaser)
         {
-            Behaviour h = (Behaviour)GetComponent("Halo");
-            h.enabled = true;
+            possession.Play();
         }
 
 
