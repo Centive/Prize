@@ -169,9 +169,9 @@ public class PlayerController : MonoBehaviour
     //slide(delay)
     IEnumerator slideCoroutine()
     {
-        movSpeed -= 2f;
+        movSpeed = maxSpeed - 2f;
         yield return new WaitForSeconds(1);
-        movSpeed += 2f;
+        movSpeed = maxSpeed;
     }
 
     //Shield
@@ -186,10 +186,9 @@ public class PlayerController : MonoBehaviour
     //Speed
     IEnumerator PowerUpSpeed()
     {
-        float prevSpeed = movSpeed;
-        movSpeed += 5f;
+        movSpeed = maxSpeed + 5f;
         yield return new WaitForSeconds(2f);
-        movSpeed = prevSpeed;
+        movSpeed = maxSpeed;
         playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
     }
 }
