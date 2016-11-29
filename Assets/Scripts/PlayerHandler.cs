@@ -77,14 +77,14 @@ public class PlayerHandler : MonoBehaviour
         myAnimator = myModel.GetComponent<Animator>();
 
         //get gameobjects
-        gameManager = GameObject.Find( "Game_Manager" );
-        Debug.Log( gameManager );
+        gameManager = GameObject.Find("Game_Manager");
+        Debug.Log(gameManager);
         //init variables
         rewardCountdown = maxRewardCountdown;
 
         //sounds
-        collisionSFX = GameObject.Find( "CollisionSFX" ).GetComponents<AudioSource>();
-        dodgeAudioSources = GameObject.Find( "PlayerRewardSFX" ).GetComponents<AudioSource>();
+        collisionSFX = GameObject.Find("CollisionSFX").GetComponents<AudioSource>();
+        dodgeAudioSources = GameObject.Find("PlayerRewardSFX").GetComponents<AudioSource>();
         slopeDownsource = collisionSFX[0];
         slopeUpsource = collisionSFX[1];
         platformFast = collisionSFX[2];
@@ -116,10 +116,10 @@ public class PlayerHandler : MonoBehaviour
         RaycastHit hit;
 
         // Check if the body's current velocity will result in a collision
-        if( myRigidbody.SweepTest( horizontalMove, out hit, distance ) && hit.transform.gameObject.tag == "Wall" )
+        if (myRigidbody.SweepTest(horizontalMove, out hit, distance) && hit.transform.gameObject.tag == "Wall")
         {
             // If so, stop the movement
-            myRigidbody.velocity = new Vector3( 0, myRigidbody.velocity.y, 0 );
+            myRigidbody.velocity = new Vector3(0, myRigidbody.velocity.y, 0);
         }
     }
 
@@ -132,41 +132,41 @@ public class PlayerHandler : MonoBehaviour
 
     void SwitchRole_ItemModels()
     {
-        myAnimator.SetInteger( "MyRole", (int)myRole );
-        switch( gameManager.GetComponent<Game_Manager>().curState )
+        myAnimator.SetInteger("MyRole", (int)myRole);
+        switch (gameManager.GetComponent<Game_Manager>().curState)
         {
-        case Game_Manager.GameState.Phase1_Pause:
-        {
-            modelDagger.GetComponent<MeshRenderer>().enabled = false;
-            modelLantern.GetComponent<SkinnedMeshRenderer>().enabled = false;
-            break;
-        }
-        case Game_Manager.GameState.Phase2_Pause:
-        {
-            switch( myRole )
-            {
-            case Role.Runner:
-            {
-                modelLantern.GetComponent<SkinnedMeshRenderer>().enabled = true;
-                break;
-            }
-            case Role.Chaser:
-            {
-                modelDagger.GetComponent<MeshRenderer>().enabled = true;
-                break;
-            }
-            }
-            break;
-        }
+            case Game_Manager.GameState.Phase1_Pause:
+                {
+                    modelDagger.GetComponent<MeshRenderer>().enabled = false;
+                    modelLantern.GetComponent<SkinnedMeshRenderer>().enabled = false;
+                    break;
+                }
+            case Game_Manager.GameState.Phase2_Pause:
+                {
+                    switch (myRole)
+                    {
+                        case Role.Runner:
+                            {
+                                modelLantern.GetComponent<SkinnedMeshRenderer>().enabled = true;
+                                break;
+                            }
+                        case Role.Chaser:
+                            {
+                                modelDagger.GetComponent<MeshRenderer>().enabled = true;
+                                break;
+                            }
+                    }
+                    break;
+                }
         }
     }
 
     void CheckPowerUpReward()
     {
-        if( rewardIsActive )
+        if (rewardIsActive)
         {
             rewardCountdown -= Time.deltaTime;
-            if( rewardCountdown < 0 )
+            if (rewardCountdown < 0)
             {
                 //Reset
                 rewardIsActive = false;
@@ -179,121 +179,120 @@ public class PlayerHandler : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter( Collider col )
+    void OnTriggerEnter(Collider col)
     {
         //OBSTACLES////////////////////////////////////
         //Slow
-        if( col.gameObject.tag == "obSlow" )
+        if (col.gameObject.tag == "obSlow")
         {
-            if( !isShielded )
+            if (!isShielded)
             {
                 //reset
                 rewardIsActive = false;
-                StopCoroutine( Obstacle_Slow() );
-                StartCoroutine( Obstacle_Slow() );
+                StopCoroutine(Obstacle_Slow());
+                StartCoroutine(Obstacle_Slow());
             }
         }
 
         //Stun
-        if( col.gameObject.tag == "obStun" )
+        if (col.gameObject.tag == "obStun")
         {
-            if( !isShielded )
+            if (!isShielded)
             {
                 //reset
                 rewardIsActive = false;
-                StopCoroutine( Obstacle_Stun() );
-                StartCoroutine( Obstacle_Stun() );
-                Destroy( col.gameObject, 0.5f );
+                StopCoroutine(Obstacle_Stun());
+                StartCoroutine(Obstacle_Stun());
+                Destroy(col.gameObject, 0.5f);
             }
-            Destroy( col.gameObject );
+            Destroy(col.gameObject);
         }
 
         //Check if avoided obstacles
-        if( col.gameObject.tag == "Avoided" )
+        if (col.gameObject.tag == "Avoided")
         {
             //Check if reward timer is not active
-            if( !rewardIsActive && myPowerUp == PowerUp_State.None )
+            if (!rewardIsActive && myPowerUp == PowerUp_State.None)
             {
                 rewardIsActive = true;
             }
 
             //Check if reward timer is active
-            if( rewardIsActive )
+            if (rewardIsActive)
             {
                 curAvoids++;                //increment the number of avoided obstacles
-                if( curAvoids >= maxAvoids ) //if the number of avoided obstacles have past the max
+                if (curAvoids >= maxAvoids) //if the number of avoided obstacles have past the max
                 {
-                    myPowerUp = (PowerUp_State)Random.Range( 1, 4 );
+                    myPowerUp = (PowerUp_State)Random.Range(1, 4);
                     powerUpGet.Play();//play powerup get
                     curAvoids = 0;
-                    Debug.Log( "duude you got a powerup. NICE!" );
 
                     //reset
                     rewardIsActive = false;
                 }
             }
 
-            if( curAvoids != maxAvoids - 1 )
+            if (curAvoids != maxAvoids - 1)
             {
                 dodgedOb.Play();//play dodge ob
 
-                powerUpCountImg[curAvoids - 1].gameObject.SetActive( true );
+                powerUpCountImg[curAvoids - 1].gameObject.SetActive(true);
             }
         }
 
         //platform(ground) slow and fast
-        if( col.gameObject.tag == "Platformslow" )
+        if (col.gameObject.tag == "Platformslow")
         {
-            if( player.movSpeed > 0f )
+            if (player.movSpeed > 0f)
             {
-                Debug.Log( "slow" );
+                Debug.Log("slow");
                 platformSlow.Play();
                 platformSlow.Play();
-                player.movSpeed -= 1f;
+                player.movSpeed = player.maxSpeed - 1f;
             }
         }
 
-        if( col.gameObject.tag == "Platformreallyslow" )
+        if (col.gameObject.tag == "Platformreallyslow")
         {
-            if( player.movSpeed > 0f )
+            if (player.movSpeed > 0f)
             {
-                Debug.Log( "slow" );
+                Debug.Log("slow");
 
                 platformSlow.Play();
 
-                player.movSpeed -= 5f;
+                player.movSpeed = player.maxSpeed - 5f;
             }
         }
-        if( col.gameObject.tag == "Platformfast" )
+        if (col.gameObject.tag == "Platformfast")
         {
-            if( player.movSpeed > 0f )
+            if (player.movSpeed > 0f)
             {
-                Debug.Log( "fast" );
+                Debug.Log("fast");
 
                 platformFast.Play();
-                player.movSpeed += 3f;
+                player.movSpeed = player.maxSpeed + 3f;
             }
         }
-        if( col.gameObject.tag == "Platformreallyfast" )
+        if (col.gameObject.tag == "Platformreallyfast")
         {
-            if( player.movSpeed > 0f )
+            if (player.movSpeed > 0f)
             {
-                Debug.Log( "fast" );
+                Debug.Log("fast");
                 platformFast.Play();
 
                 platformFast.Play();
-                player.movSpeed += 5f;
+                player.movSpeed = player.maxSpeed + 5f;
             }
         }
     }
 
     //stay on platform
-    void OnCollisionStay( Collision col )
+    void OnCollisionStay(Collision col)
     {
         //Handle platforms
-        if( col.gameObject.tag == "Platformmoving" )
+        if (col.gameObject.tag == "Platformmoving")
         {
-            if( timer <= 2f )
+            if (timer <= 2f)
             {
                 this.transform.position = col.transform.position;
             }
@@ -301,62 +300,62 @@ public class PlayerHandler : MonoBehaviour
     }
 
     //handle Incline
-    void OnCollisionEnter( Collision col )
+    void OnCollisionEnter(Collision col)
     {
-        if( col.gameObject.tag == "Incline" )
+        if (col.gameObject.tag == "Incline")
         {
-            CheckGroundIncline( col.gameObject );
+            CheckGroundIncline(col.gameObject);
         }
     }
 
-    void OnCollisionExit( Collision col )
+    void OnCollisionExit(Collision col)
     {
-        if( col.gameObject.tag == "Incline" )
+        if (col.gameObject.tag == "Incline")
         {
-            StopCoroutine( NormGround() );
-            StartCoroutine( NormGround() );
+            StopCoroutine(NormGround());
+            StartCoroutine(NormGround());
         }
     }
 
     //incline check
-    void CheckGroundIncline( GameObject ground )
+    void CheckGroundIncline(GameObject ground)
     {
         //get angle from game obj
         Vector3 angle = ground.transform.eulerAngles;
         Vector3 ParentAngle = ground.transform.parent.gameObject.transform.eulerAngles;
 
         //check for a slow inc
-        if( ParentAngle.y <= 1f )
-            if( angle.z >= 5f && angle.z <= 45f && ParentAngle.y == 0f )
+        if (ParentAngle.y <= 1f)
+            if (angle.z >= 5f && angle.z <= 45f && ParentAngle.y == 0f)
             {
                 slopeUpsource.Play();
-                StopCoroutine( SlowGround() );
-                StartCoroutine( SlowGround() );
+                StopCoroutine(SlowGround());
+                StartCoroutine(SlowGround());
 
             }
         //check for a fast inc
-        if( ParentAngle.y >= 179f )
+        if (ParentAngle.y >= 179f)
         {
-            if( angle.z >= 5f && angle.z <= 45f )
+            if (angle.z >= 5f && angle.z <= 45f)
             {
                 slopeDownsource.Play();
-                StopCoroutine( FastGround() );
-                StartCoroutine( FastGround() );
+                StopCoroutine(FastGround());
+                StartCoroutine(FastGround());
             }
         }
     }
 
     IEnumerator SlowGround()//Incline slow check
     {
-        Debug.Log( "SLOW INCLINE: " + player.movSpeed );
-        player.movSpeed -= 4f;
+        Debug.Log("SLOW INCLINE: " + player.movSpeed);
+        player.movSpeed = player.maxSpeed - 4f;
         yield return null;
     }
 
     IEnumerator FastGround()//Incline fast check
     {
-        Debug.Log( "FAST INCLINE: " + player.movSpeed );
-        player.movSpeed += 4f;
+        Debug.Log("FAST INCLINE: " + player.movSpeed);
+        player.movSpeed = player.maxSpeed + 4f;
         yield return null;
     }
 
@@ -371,25 +370,23 @@ public class PlayerHandler : MonoBehaviour
     //Slow
     IEnumerator Obstacle_Slow()
     {
-        float prevSpeed = player.movSpeed;
-        player.movSpeed -= 5f;
-        yield return new WaitForSeconds( 2f );
-        player.movSpeed = prevSpeed;
+        player.movSpeed = player.maxSpeed - 5f;
+        yield return new WaitForSeconds(2f);
+        player.movSpeed = player.maxSpeed;
     }
 
     //Stun
     IEnumerator Obstacle_Stun()
     {
-        float prevSpeed = player.movSpeed;
         player.movSpeed = 0f;
-        yield return new WaitForSeconds( 0.5f );
-        player.movSpeed = prevSpeed;
+        yield return new WaitForSeconds(0.5f);
+        player.movSpeed = player.maxSpeed;
     }
 
     void haloforchaser()
     {
 
-        if( myRole == Role.Chaser )
+        if (myRole == Role.Chaser)
         {
             possession.enableEmission = true;
         }
