@@ -30,6 +30,7 @@ public class Fade : MonoBehaviour
 
     public void BeginFade()
     {
+        alpha = 1.0f;
         fadeNow = true;
     }
 }
