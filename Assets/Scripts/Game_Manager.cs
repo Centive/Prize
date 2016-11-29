@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -88,7 +88,7 @@ public class Game_Manager : MonoBehaviour
     private float phase1Timer = 6f,
                         phase2Timer = 6f;
     public float runnerEndPosition = 870f;
-
+    
     void Start()
     {
         //Audio
@@ -189,6 +189,19 @@ public class Game_Manager : MonoBehaviour
                             phase1SFX.Play();
                             startScreenBGM.Pause();
                         }
+                        else if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            //Set their speeds
+                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
+                            uiCountdown.gameObject.SetActive(false);
+                            curState = GameState.Phase1_Start;
+                            pressStartSFX.Play();
+
+                            //Audio
+                            phase1SFX.Play();
+                            startScreenBGM.Pause();
+                        }
                     }
                     break;
                 }
@@ -220,9 +233,16 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Wait:
                 {
+
                     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                     {
                         if (!phase2Cutscene2_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
+                        {
+                            this.GetComponent<Fade>().BeginFade();
+                            phase2Cutscene2_prefab.gameObject.SetActive(false);
+                            curState = GameState.Phase2_Pause;
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Space))
                         {
                             this.GetComponent<Fade>().BeginFade();
                             phase2Cutscene2_prefab.gameObject.SetActive(false);
@@ -232,6 +252,12 @@ public class Game_Manager : MonoBehaviour
                     if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                     {
                         if (!phase2Cutscene1_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
+                        {
+                            this.GetComponent<Fade>().BeginFade();
+                            phase2Cutscene1_prefab.gameObject.SetActive(false);
+                            curState = GameState.Phase2_Pause;
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Space))
                         {
                             this.GetComponent<Fade>().BeginFade();
                             phase2Cutscene1_prefab.gameObject.SetActive(false);
@@ -256,6 +282,18 @@ public class Game_Manager : MonoBehaviour
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
+                            //Audio
+                            phase2SFX.Play();
+                            phase1SFX.Pause();
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            //Set their speeds
+                            players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
+                            players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
+                            uiCountdown.gameObject.SetActive(false);
+                            curState = GameState.Phase2_Start;
+
                             //Audio
                             phase2SFX.Play();
                             phase1SFX.Pause();
@@ -349,7 +387,6 @@ public class Game_Manager : MonoBehaviour
                     phase1SFX.Pause();
                     phase2SFX.Pause();
                     endBGM.Play();
-
                     if (players[0] != null)
                     {
                         switch (players[0].GetComponent<PlayerHandler>().myRole)
