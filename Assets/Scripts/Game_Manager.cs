@@ -35,6 +35,7 @@ public class Game_Manager : MonoBehaviour
     public Text showP1Name;
     public Text showP2Name;
 
+    public bool gameStartCheck = false;
 
     //GameOver
     public Image gameOverImg;
@@ -158,7 +159,7 @@ public class Game_Manager : MonoBehaviour
                     players[1].GetComponent<PlayerController>().movSpeed = 0;
 
                     //Start Game
-                    if (Input.GetKeyDown(KeyCode.Space))
+                    if (Input.GetKeyDown(KeyCode.Space) && gameStartCheck == true)
                     {
 
                         uiInstructions.gameObject.SetActive(false);
@@ -638,6 +639,7 @@ public class Game_Manager : MonoBehaviour
     {
         uiInstructions.gameObject.SetActive(true);
         startScreen.gameObject.SetActive(false);
+        gameStartCheck = true;
     }
 
     void getPlayerName()
