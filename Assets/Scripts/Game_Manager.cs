@@ -11,10 +11,13 @@ public class Game_Manager : MonoBehaviour
         None,
         Phase1_Pause,
         Phase1_Start,
+        Phase2_Cutscene,
+        Phase2_Wait,
         Phase2_Pause,
         Phase2_Start,
         EndScene,
-        EndMenu
+        EndMenu,
+        EndMenuPause
     }
 
     //Game UI
@@ -43,6 +46,10 @@ public class Game_Manager : MonoBehaviour
     public Image p1ChaserWin_prefab;
     public Image p2RunnerWin_prefab;
     public Image p2ChaserWin_prefab;
+
+    //phase 2 cutscene comic
+    public RawImage phase2Cutscene1_prefab;
+    public RawImage phase2Cutscene2_prefab;
 
     //SFX
     private AudioSource[] BGMSFX;
@@ -124,7 +131,7 @@ public class Game_Manager : MonoBehaviour
             {
                 Application.Quit();
             }
-            if (curState == GameState.EndMenu)
+            if (curState == GameState.EndMenu || curState == GameState.EndMenuPause)
             {
                 //redo Game
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -153,7 +160,7 @@ public class Game_Manager : MonoBehaviour
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
-                       
+
                         uiInstructions.gameObject.SetActive(false);
                         playerNameCanvas.gameObject.SetActive(true);
                         uiInstructions.gameObject.SetActive(false);
@@ -190,12 +197,50 @@ public class Game_Manager : MonoBehaviour
                     SetPhase2();    //Checks if for phase 2
                     break;
                 }
-            case GameState.Phase2_Pause:
+            case GameState.Phase2_Cutscene:
                 {
                     //Set players to not move
                     players[0].GetComponent<PlayerController>().movSpeed = 0;
                     players[1].GetComponent<PlayerController>().movSpeed = 0;
 
+                    if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    {
+                        this.GetComponent<Fade>().BeginFade();
+                        phase2Cutscene2_prefab.gameObject.SetActive(true);
+                        curState = GameState.Phase2_Wait;
+                    }
+                    if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    {
+                        this.GetComponent<Fade>().BeginFade();
+                        phase2Cutscene1_prefab.gameObject.SetActive(true);
+                        curState = GameState.Phase2_Wait;
+                    }
+                    break;
+                }
+            case GameState.Phase2_Wait:
+                {
+                    if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    {
+                        if (!phase2Cutscene2_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
+                        {
+                            this.GetComponent<Fade>().BeginFade();
+                            phase2Cutscene2_prefab.gameObject.SetActive(false);
+                            curState = GameState.Phase2_Pause;
+                        }
+                    }
+                    if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
+                    {
+                        if (!phase2Cutscene1_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
+                        {
+                            this.GetComponent<Fade>().BeginFade();
+                            phase2Cutscene1_prefab.gameObject.SetActive(false);
+                            curState = GameState.Phase2_Pause;
+                        }
+                    }
+                    break;
+                }
+            case GameState.Phase2_Pause:
+                {
                     //Start Countdown
                     if (isPhase2Countdown)
                     {
@@ -226,44 +271,6 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.EndScene:
                 {
-                    // uiGameOver.gameObject.SetActive(true);
-                    // if (players[0] != null)
-                    // {
-                    //     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
-                    //     {
-                    //         uiGameOver.text = "P1 RUNNER WINS\nPress Space to restart or Esc to close";
-                    //     }
-                    //     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                    //     {
-                    //         uiGameOver.text = "P1 CHASER WINS\nPress Space to restart or Esc to close";
-                    //     }
-                    // }
-                    //
-                    // if (players[1] != null)
-                    // {
-                    //     if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Runner)
-                    //     {
-                    //         uiGameOver.text = "P2 RUNNER WINS\nPress Space to restart or Esc to close";
-                    //     }
-                    //     if (players[1].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
-                    //     {
-                    //         uiGameOver.text = "P2 CHASER WINS\nPress Space to restart or Esc to close";
-                    //     }
-                    // }
-                    // //redo Game
-                    // if (Input.GetKeyDown(KeyCode.Space))
-                    // {
-                    //     SceneManager.LoadScene("Testing_Area");
-                    // }
-                    //
-                    // //Runner stop at end
-                    // if (players[0] != null)
-                    //     if (players[0].transform.position.x >= 880f)
-                    //         players[0].GetComponent<PlayerController>().movSpeed = 0;
-                    // if (players[1] != null)
-                    //     if (players[1].transform.position.x >= 880f)
-                    //         players[1].GetComponent<PlayerController>().movSpeed = 0;
-
                     /* - Check which player is alive
                      * - Check the player's role
                      * - Depending on the role play that role's win animation
@@ -323,7 +330,7 @@ public class Game_Manager : MonoBehaviour
                                 }
                         }
                     }
-                   
+
                     curState = GameState.EndMenu;
                     break;
                 }
@@ -336,7 +343,7 @@ public class Game_Manager : MonoBehaviour
                      * 
                      * *NOTE* no end animation for runner
                      */
-                     //AUDIO
+                    //AUDIO
                     startScreenBGM.Pause();
                     phase1SFX.Pause();
                     phase2SFX.Pause();
@@ -350,13 +357,16 @@ public class Game_Manager : MonoBehaviour
                                 {
                                     if (!endAnimation.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("EndAnim"))
                                     {
+                                        this.GetComponent<Fade>().BeginFade();
                                         p2ChaserWin_prefab.gameObject.SetActive(true);
+                                        curState = GameState.EndMenuPause;
                                     }
                                     break;
                                 }
                             case PlayerHandler.Role.Runner:
                                 {
                                     p2RunnerWin_prefab.gameObject.SetActive(true);
+                                    curState = GameState.EndMenuPause;
                                     break;
                                 }
                         }
@@ -369,18 +379,25 @@ public class Game_Manager : MonoBehaviour
                                 {
                                     if (!endAnimation.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("EndAnim"))
                                     {
+                                        this.GetComponent<Fade>().BeginFade();
                                         p1ChaserWin_prefab.gameObject.SetActive(true);
+                                        curState = GameState.EndMenuPause;
                                     }
                                     break;
                                 }
                             case PlayerHandler.Role.Runner:
                                 {
                                     p1RunnerWin_prefab.gameObject.SetActive(true);
+                                    curState = GameState.EndMenuPause;
                                     break;
                                 }
                         }
                     }
-
+                    break;
+                }
+            case GameState.EndMenuPause:
+                {
+                    //nothing
                     break;
                 }
         }
@@ -406,7 +423,7 @@ public class Game_Manager : MonoBehaviour
             }
 
             //move to next state
-            curState = GameState.Phase2_Pause;
+            curState = GameState.Phase2_Cutscene;
             isPhase2Countdown = true;
             isPhase2 = false;
         }
