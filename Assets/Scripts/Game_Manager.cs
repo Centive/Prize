@@ -158,16 +158,14 @@ public class Game_Manager : MonoBehaviour
             case GameState.Phase1_Pause:
                 {
                     //freeze
-                    Time.timeScale = 0;
 
                     //Set players to not move
 
-                    players[0].GetComponent<PlayerController>().movSpeed = 0;
-                    players[1].GetComponent<PlayerController>().movSpeed = 0;
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space) && gameStartCheck == true)
                     {
-                        Time.timeScale = 1;
 
                         uiInstructions.gameObject.SetActive(false);
                         playerNameCanvas.gameObject.SetActive(true);
@@ -191,12 +189,11 @@ public class Game_Manager : MonoBehaviour
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase1_Start;
                             pressStartSFX.Play();
-
                             //Audio
                             phase1SFX.Play();
                             startScreenBGM.Pause();
                         }
-                        else if (Input.GetKeyDown(KeyCode.Space))
+                       /* else if (Input.GetKeyDown(KeyCode.Space))
                         {
                             //Set their speeds
                             players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
@@ -208,22 +205,23 @@ public class Game_Manager : MonoBehaviour
                             //Audio
                             phase1SFX.Play();
                             startScreenBGM.Pause();
-                        }
+                        }*/
                     }
                     break;
                 }
             case GameState.Phase1_Start:
                 {
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.play;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.play;
                     CheckDeath();   //Checks if a player died in the level environment
                     SetPhase2();    //Checks if for phase 2
                     break;
                 }
             case GameState.Phase2_Cutscene:
                 {
-                    Time.timeScale = 0;
                     //Set players to not move
-                    players[0].GetComponent<PlayerController>().movSpeed = 0;
-                    players[1].GetComponent<PlayerController>().movSpeed = 0;
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
 
                     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                     {
@@ -241,7 +239,6 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Wait:
                 {
-                    Time.timeScale = 0;
                     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                     {
                         if (!phase2Cutscene2_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
@@ -276,15 +273,17 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Pause:
                 {
-                    Time.timeScale = 0;
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
                     //Start Countdown
                     if (isPhase2Countdown)
                     {
                         uiCountdown.gameObject.SetActive(true);
-                        phase2Timer -= Time.deltaTime;
-                        uiCountdown.text = (int)phase2Timer + "";
-
-                        if (phase2Timer < 0)
+                         phase2Timer -= Time.deltaTime;
+                         uiCountdown.text = (int)phase2Timer + "";
+                  
+                       if (phase2Timer < 0)
+                      
                         {
                             //Set their speeds
                             players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
@@ -295,24 +294,24 @@ public class Game_Manager : MonoBehaviour
                             phase2SFX.Play();
                             phase1SFX.Pause();
                         }
-                        else if (Input.GetKeyDown(KeyCode.Space))
+                       /* else if (Input.GetKeyDown(KeyCode.Space))
                         {
                             //Set their speeds
                             players[0].GetComponent<PlayerController>().movSpeed = player1Speed;
                             players[1].GetComponent<PlayerController>().movSpeed = player2Speed;
                             uiCountdown.gameObject.SetActive(false);
                             curState = GameState.Phase2_Start;
-
                             //Audio
                             phase2SFX.Play();
                             phase1SFX.Pause();
-                        }
+                        }*/
                     }
                     break;
                 }
             case GameState.Phase2_Start:
                 {
-                    Time.timeScale = 1;
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.play;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.play;
                     CheckDeath();   //Checks if a player died in the level environment
                     CheckChaserWin();
                     CheckRunnerWin();
@@ -334,7 +333,8 @@ public class Game_Manager : MonoBehaviour
                      * Runner:
                      * - Nothing
                      */
-                    Time.timeScale = 0;
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
                     if (players[0] != null)
                     {
                         players[0].GetComponent<PlayerController>().movSpeed = 0;//disable speed
@@ -393,8 +393,8 @@ public class Game_Manager : MonoBehaviour
                      * *NOTE* no end animation for runner
                      */
                     //AUDIO
-                    Time.timeScale = 0;
-                    startScreenBGM.Pause();
+                    players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                    players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze; startScreenBGM.Pause();
                     phase1SFX.Pause();
                     phase2SFX.Pause();
                     endBGM.Play();
@@ -621,7 +621,8 @@ public class Game_Manager : MonoBehaviour
                 //   winText.gameObject.SetActive(true);
                 // playerWin.Play();
                 DeathGUIsfx();
-
+                players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
                 curState = GameState.EndMenu;
                 Destroy(players[0]);
             }
@@ -637,13 +638,14 @@ public class Game_Manager : MonoBehaviour
                 //  playerWin.Play();
 
                 DeathGUIsfx();
-
+                players[0].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
+                players[1].GetComponent<PlayerController>().playerState = PlayerController.GameState.freeze;
                 curState = GameState.EndMenu;
                 Destroy(players[1]);
             }
         }
     }
-
+   
     void DeathGUIsfx()
     {
         playerNameCanvas.gameObject.SetActive(false);

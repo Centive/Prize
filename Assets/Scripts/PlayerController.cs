@@ -3,6 +3,14 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+    public enum GameState
+    {
+        play,
+        freeze
+
+    }
+
+    public GameState playerState;
 
     //Variables
     public float maxSpeed = 0;
@@ -23,11 +31,7 @@ public class PlayerController : MonoBehaviour
     public KeyCode jump;
     public KeyCode slide;
     public KeyCode usePowerUp;
-
-    //power-ups
-    public GameObject darkBallPrefab;
-    public GameObject dropObstaclePrefab;
-
+    
     //Power-ups audio
     public AudioSource[] powerAudios;
     private AudioSource darkballSfx;
@@ -39,7 +43,7 @@ public class PlayerController : MonoBehaviour
     //jump slide audio
     private AudioSource jumpSFX;
     private AudioSource slideSFX;
-    
+
     //Start
     void Start()
     {
@@ -49,7 +53,7 @@ public class PlayerController : MonoBehaviour
         myTrail = GetComponent<TrailRenderer>();
         playerHandler = GetComponent<PlayerHandler>();
         playerControlAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
-     
+
 
         //Control Audio
         jumpSFX = playerControlAudios[0];
@@ -66,8 +70,25 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Cheating();
-        Controls();
+        state();
     }
+
+    void state()
+    {
+        switch (playerState)
+        {
+            case GameState.play:
+                {
+                    Controls();
+                    break;
+                }
+            case GameState.freeze:
+                {
+                    break;
+                }
+        }
+    }
+
 
     //Controls
     void Controls()
@@ -96,7 +117,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(slideCoroutine());
         }
 
-       
+
     }
 
     //Ground checks
@@ -116,7 +137,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-  
+
 
     //slide(delay)
     IEnumerator slideCoroutine()
@@ -126,7 +147,7 @@ public class PlayerController : MonoBehaviour
         movSpeed = maxSpeed;
     }
 
-    
 
-    
+
+
 }

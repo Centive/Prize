@@ -147,6 +147,7 @@ public class PlayerHandler : MonoBehaviour
         haloforchaser();
         SwitchRole_ItemModels();
         powerUpState();
+        StartCoroutine(darkballHit());
     }
 
     void SwitchRole_ItemModels()
