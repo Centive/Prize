@@ -1,0 +1,20 @@
+
+Sparks.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+st1
+  rotate: false
+  xy: 5, 5
+  size: 187, 187
+  orig: 187, 187
+  offset: 0, 0
+  index: -1
+st2
+  rotate: false
+  xy: 5, 197
+  size: 215, 215
+  orig: 215, 215
+  offset: 0, 0
+  index: -1

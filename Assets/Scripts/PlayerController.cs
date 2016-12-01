@@ -48,13 +48,8 @@ public class PlayerController : MonoBehaviour
         myAnimator = GetComponent<PlayerHandler>().myModel.GetComponent<Animator>();
         myTrail = GetComponent<TrailRenderer>();
         playerHandler = GetComponent<PlayerHandler>();
-        powerAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
-        playerControlAudios = GameObject.Find("PlayerControlSFX").GetComponents<AudioSource>();
-        //init audio clips
-        darkballSfx = powerAudios[0];
-        dropObstacleSfx = powerAudios[1];
-        shieldSfx = powerAudios[2];
-        speedSfx = powerAudios[3];
+        playerControlAudios = GameObject.Find("PlayerSFX").GetComponents<AudioSource>();
+     
 
         //Control Audio
         jumpSFX = playerControlAudios[0];
@@ -101,39 +96,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(slideCoroutine());
         }
 
-        //Use powerup
-        if (Input.GetKeyDown(usePowerUp))
-        {
-            switch (playerHandler.myPowerUp)
-            {
-                case PlayerHandler.PowerUp_State.Darkball:
-                    {
-                        darkballSfx.Play();
-                        PowerUpDarkBall();
-                        break;
-                    }
-                case PlayerHandler.PowerUp_State.DropObstacle:
-                    {
-                        dropObstacleSfx.Play();
-                        PowerUpDropObstacle();
-                        break;
-                    }
-                case PlayerHandler.PowerUp_State.Shield:
-                    {
-                        shieldSfx.Play();
-                        StopCoroutine(PowerUpShield());
-                        StartCoroutine(PowerUpShield());
-                        break;
-                    }
-                case PlayerHandler.PowerUp_State.Speed:
-                    {
-                        speedSfx.Play();
-                        StopCoroutine(PowerUpSpeed());
-                        StartCoroutine(PowerUpSpeed());
-                        break;
-                    }
-            }
-        }
+       
     }
 
     //Ground checks
@@ -153,18 +116,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //POWER UPS///////////////////////////////////////////////////////
-    //drop obs
-    void PowerUpDropObstacle()
-    {
-        Instantiate(dropObstaclePrefab, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
-        playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
-    }
-    void PowerUpDarkBall()
-    {
-        Instantiate(darkBallPrefab, new Vector3(transform.position.x + 3f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
-        playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
-    }
+  
 
     //slide(delay)
     IEnumerator slideCoroutine()
@@ -174,21 +126,7 @@ public class PlayerController : MonoBehaviour
         movSpeed = maxSpeed;
     }
 
-    //Shield
-    IEnumerator PowerUpShield()
-    {
-        playerHandler.isShielded = true;
-        yield return new WaitForSeconds(2f);
-        playerHandler.isShielded = false;
-        playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
-    }
+    
 
-    //Speed
-    IEnumerator PowerUpSpeed()
-    {
-        movSpeed = maxSpeed + 5f;
-        yield return new WaitForSeconds(2f);
-        movSpeed = maxSpeed;
-        playerHandler.myPowerUp = PlayerHandler.PowerUp_State.None;
-    }
+    
 }

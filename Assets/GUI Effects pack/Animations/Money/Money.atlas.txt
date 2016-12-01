@@ -1,0 +1,41 @@
+
+Money.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+m1
+  rotate: false
+  xy: 198, 267
+  size: 187, 150
+  orig: 187, 150
+  offset: 0, 0
+  index: -1
+m2
+  rotate: false
+  xy: 3, 270
+  size: 192, 147
+  orig: 192, 147
+  offset: 0, 0
+  index: -1
+m2 copy
+  rotate: false
+  xy: 3, 120
+  size: 192, 147
+  orig: 192, 147
+  offset: 0, 0
+  index: -1
+m3
+  rotate: false
+  xy: 198, 142
+  size: 168, 122
+  orig: 168, 122
+  offset: 0, 0
+  index: -1
+m4
+  rotate: false
+  xy: 3, 3
+  size: 214, 114
+  orig: 214, 114
+  offset: 0, 0
+  index: -1

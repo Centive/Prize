@@ -21,7 +21,7 @@ public class PlayerHandler : MonoBehaviour
         Shield,
         Speed
     }
-
+    private int count = 4;
     //Variables
     public bool isShielded = false;
     public bool rewardIsActive = false;
@@ -52,6 +52,15 @@ public class PlayerHandler : MonoBehaviour
 
     public ParticleSystem possession;
 
+    //Powerups
+    public GameObject darkball;
+    public GameObject dropObs;
+
+    public Text powerupIndicate;
+    public GameObject powerupEffectPlayer;
+
+    public KeyCode usePowerUp;
+
     //Sounds
     private AudioSource[] collisionSFX;
     private AudioSource[] dodgeAudioSources;
@@ -61,13 +70,17 @@ public class PlayerHandler : MonoBehaviour
 
     private AudioSource platformSlow;
     private AudioSource platformFast;
-
+    private AudioSource ObsStunSFX;
 
     private AudioSource dodgedOb;
     private AudioSource powerUpGet;
+    private AudioSource powerupUse;
 
     //UI
     public Image[] powerUpCountImg;
+    //Effect
+    public GameObject powerupEffect;
+    public GameObject powerupEffect2;
 
     void Start()
     {
@@ -87,19 +100,24 @@ public class PlayerHandler : MonoBehaviour
         dodgeAudioSources = GameObject.Find("PlayerRewardSFX").GetComponents<AudioSource>();
         slopeDownsource = collisionSFX[0];
         slopeUpsource = collisionSFX[1];
+
         platformFast = collisionSFX[2];
         platformSlow = collisionSFX[3];
 
+        ObsStunSFX = collisionSFX[4];
 
         dodgedOb = dodgeAudioSources[0];
         powerUpGet = dodgeAudioSources[1];
+        powerupUse = dodgeAudioSources[2];
 
         possession = GetComponentInChildren<ParticleSystem>();
         possession.enableEmission = false;
 
+
         //Disable models
         modelDagger.GetComponent<MeshRenderer>().enabled = false;
         modelLantern.GetComponent<SkinnedMeshRenderer>().enabled = false;
+
     }
 
     //Wall collide detection
@@ -125,9 +143,10 @@ public class PlayerHandler : MonoBehaviour
 
     void Update()
     {
-        CheckPowerUpReward();
+        //CheckPowerUpReward();
         haloforchaser();
         SwitchRole_ItemModels();
+        powerUpState();
     }
 
     void SwitchRole_ItemModels()
@@ -161,6 +180,47 @@ public class PlayerHandler : MonoBehaviour
         }
     }
 
+    void powerUpState()
+    {
+        switch (myPowerUp)
+        {
+            case PowerUp_State.Darkball:
+                {
+                    StopCoroutine(useDarkBall());
+                    StartCoroutine(useDarkBall());
+                    break;
+
+                }
+            case PowerUp_State.DropObstacle:
+                {
+                    StopCoroutine(useDropObs());
+
+                    StartCoroutine(useDropObs());
+
+                    break;
+                }
+            case PowerUp_State.Shield:
+                {
+
+                    StartCoroutine(powerupPlayerEffect());
+                    StopCoroutine(PowerUpShield());
+                    StartCoroutine(PowerUpShield());
+
+                    break;
+                }
+            case PowerUp_State.Speed:
+                {
+                    StartCoroutine(powerupPlayerEffect());
+                    StopCoroutine(PowerUpSpeed());
+                    StartCoroutine(PowerUpSpeed());
+
+                    break;
+                }
+
+        }
+
+    }
+
     void CheckPowerUpReward()
     {
         if (rewardIsActive)
@@ -191,6 +251,8 @@ public class PlayerHandler : MonoBehaviour
                 rewardIsActive = false;
                 StopCoroutine(Obstacle_Slow());
                 StartCoroutine(Obstacle_Slow());
+
+                platformSlow.Play();
             }
         }
 
@@ -200,6 +262,8 @@ public class PlayerHandler : MonoBehaviour
             if (!isShielded)
             {
                 //reset
+                ObsStunSFX.Play();
+
                 rewardIsActive = false;
                 StopCoroutine(Obstacle_Stun());
                 StartCoroutine(Obstacle_Stun());
@@ -209,7 +273,7 @@ public class PlayerHandler : MonoBehaviour
         }
 
         //Check if avoided obstacles
-        if (col.gameObject.tag == "Avoided")
+        if (col.gameObject.tag == "Avoided" || col.gameObject.tag == "Reward")
         {
             //Check if reward timer is not active
             if (!rewardIsActive && myPowerUp == PowerUp_State.None)
@@ -220,24 +284,36 @@ public class PlayerHandler : MonoBehaviour
             //Check if reward timer is active
             if (rewardIsActive)
             {
+                powerUpCountImg[curAvoids].gameObject.SetActive(true);
+
                 curAvoids++;                //increment the number of avoided obstacles
+
                 if (curAvoids >= maxAvoids) //if the number of avoided obstacles have past the max
                 {
-                    myPowerUp = (PowerUp_State)Random.Range(1, 4);
-                    powerUpGet.Play();//play powerup get
-                    curAvoids = 0;
 
+                    StartCoroutine(powerUpIE());
+                    powerupIndicate.gameObject.SetActive(true);
+                    powerUpCountImg[0].gameObject.SetActive(false);
+                    powerUpCountImg[1].gameObject.SetActive(false);
+                    powerUpCountImg[2].gameObject.SetActive(false);
+
+                    powerUpGet.Play();
+
+                     myPowerUp = (PowerUp_State)Random.Range(1, 4);
+                    StartCoroutine(powerUpIndicateIE());
+
+                    StartCoroutine(powerupTime());
+                    curAvoids = 0;
                     //reset
                     rewardIsActive = false;
                 }
+                
+
             }
 
-            if (curAvoids != maxAvoids - 1)
-            {
-                dodgedOb.Play();//play dodge ob
+            dodgedOb.Play();//play dodge ob
 
-                powerUpCountImg[curAvoids - 1].gameObject.SetActive(true);
-            }
+
         }
 
         //platform(ground) slow and fast
@@ -359,10 +435,130 @@ public class PlayerHandler : MonoBehaviour
         yield return null;
     }
 
+
     IEnumerator NormGround()//Flat ground check
     {
         player.movSpeed = player.maxSpeed;
         yield return null;
+    }
+    IEnumerator powerUpIE()
+    {
+
+        powerupEffect.gameObject.SetActive(true);
+        powerupEffect2.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
+        powerupEffect.gameObject.SetActive(false);
+        powerupEffect2.gameObject.SetActive(false);
+    }
+
+    IEnumerator powerupTime()
+    {
+        yield return new WaitForSeconds(4f);
+        myPowerUp = PowerUp_State.None;
+    }
+
+    IEnumerator powerUpIndicateIE()
+    {
+        string s = powerupIndicate.text;
+        if (myPowerUp == PowerUp_State.Darkball)
+        {
+            powerupIndicate.text = powerupIndicate.text + " Dark Ball!";
+
+        }
+        else if (myPowerUp == PowerUp_State.DropObstacle)
+        {
+            powerupIndicate.text = powerupIndicate.text + " Drop Obstacle!";
+
+        }
+        else if (myPowerUp == PowerUp_State.Shield)
+        {
+            powerupIndicate.text = " Shield!";
+
+        }
+        else if (myPowerUp == PowerUp_State.Speed)
+        {
+            powerupIndicate.text = "Speed Up!";
+        }
+        yield return new WaitForSeconds(4f);
+        powerupIndicate.text = s;
+        powerupIndicate.gameObject.SetActive(false);
+    }
+
+    IEnumerator PowerUpShield()
+    {
+
+        isShielded = true;
+        yield return new WaitForSeconds(3f);
+        isShielded = false;
+    }
+
+    void PowerUpDropObstacle()
+    {
+
+        Instantiate(dropObs, new Vector3(transform.position.x - 2.5f, transform.position.y + 1f, transform.position.z), Quaternion.identity);
+
+    }
+    void PowerUpDarkBall()
+    {
+        Instantiate(darkball, new Vector3(transform.position.x + 1f, transform.position.y + 1.5f, transform.position.z), Quaternion.identity);
+    }
+    IEnumerator useDarkBall()
+    {
+        if (Input.GetKeyDown(usePowerUp))
+        {
+            powerupUse.Play();
+            PowerUpDarkBall();
+        }
+        yield return new WaitForSeconds(4f);
+
+
+    }
+    //max 3 slow obstacles
+    IEnumerator useDropObs()
+    {
+        if (Input.GetKeyDown(usePowerUp))
+        {
+            count--;
+
+            if (count > 0)
+            {
+                powerupUse.Play();
+
+                PowerUpDropObstacle();
+            }
+        }
+        yield return new WaitForSeconds(5f);
+        count = 4;
+
+
+    }
+
+    IEnumerator darkballHit()
+    {
+        if (darkball.gameObject.transform.position == this.gameObject.transform.position)
+        {
+            if (player.movSpeed > 0)
+            {
+                player.movSpeed -= 2f;
+
+            }
+        }
+        yield return new WaitForSeconds(5f);
+        player.movSpeed = player.maxSpeed;
+    }
+    //Speed
+    IEnumerator PowerUpSpeed()
+    {
+        player.movSpeed = player.maxSpeed + 5f;
+        yield return new WaitForSeconds(3f);
+        player.movSpeed = player.maxSpeed;
+    }
+
+    IEnumerator powerupPlayerEffect()
+    {
+        powerupEffectPlayer.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        powerupEffectPlayer.gameObject.SetActive(false);
     }
 
     //Obstacles

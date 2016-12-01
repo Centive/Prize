@@ -35,7 +35,11 @@ public class Game_Manager : MonoBehaviour
     public Text showP1Name;
     public Text showP2Name;
 
+    public GameObject powerupCountImg1;
+    public GameObject powerupCountImg2;
+
     public bool gameStartCheck = false;
+
 
     //GameOver
     public Image gameOverImg;
@@ -104,7 +108,9 @@ public class Game_Manager : MonoBehaviour
         pressStartSFX = BGMSFX[7];
         endBGM = BGMSFX[8];
         startScreenBGM.Play();
-
+        //int ui
+       // powerupCountImg1.gameObject.SetActive(false);
+       // powerupCountImg2.gameObject.SetActive(false);
         //init components/gameobjects
         players = GameObject.FindGameObjectsWithTag("Human");
         altar = GameObject.FindGameObjectWithTag("Altar");
