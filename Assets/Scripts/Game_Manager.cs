@@ -108,10 +108,7 @@ public class Game_Manager : MonoBehaviour
         pressStartSFX = BGMSFX[7];
         endBGM = BGMSFX[8];
         startScreenBGM.Play();
-        //int ui
-       // powerupCountImg1.gameObject.SetActive(false);
-       // powerupCountImg2.gameObject.SetActive(false);
-        //init components/gameobjects
+       
         players = GameObject.FindGameObjectsWithTag("Human");
         altar = GameObject.FindGameObjectWithTag("Altar");
 
@@ -160,13 +157,17 @@ public class Game_Manager : MonoBehaviour
         {
             case GameState.Phase1_Pause:
                 {
+                    //freeze
+                    Time.timeScale = 0;
+
                     //Set players to not move
+
                     players[0].GetComponent<PlayerController>().movSpeed = 0;
                     players[1].GetComponent<PlayerController>().movSpeed = 0;
-
                     //Start Game
                     if (Input.GetKeyDown(KeyCode.Space) && gameStartCheck == true)
                     {
+                        Time.timeScale = 1;
 
                         uiInstructions.gameObject.SetActive(false);
                         playerNameCanvas.gameObject.SetActive(true);
@@ -219,6 +220,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Cutscene:
                 {
+                    Time.timeScale = 0;
                     //Set players to not move
                     players[0].GetComponent<PlayerController>().movSpeed = 0;
                     players[1].GetComponent<PlayerController>().movSpeed = 0;
@@ -239,7 +241,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Wait:
                 {
-
+                    Time.timeScale = 0;
                     if (players[0].GetComponent<PlayerHandler>().myRole == PlayerHandler.Role.Chaser)
                     {
                         if (!phase2Cutscene2_prefab.GetComponent<PlayPhase2Cutscene>().CheckIfPlaying())
@@ -274,6 +276,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Pause:
                 {
+                    Time.timeScale = 0;
                     //Start Countdown
                     if (isPhase2Countdown)
                     {
@@ -309,6 +312,7 @@ public class Game_Manager : MonoBehaviour
                 }
             case GameState.Phase2_Start:
                 {
+                    Time.timeScale = 1;
                     CheckDeath();   //Checks if a player died in the level environment
                     CheckChaserWin();
                     CheckRunnerWin();
@@ -330,7 +334,7 @@ public class Game_Manager : MonoBehaviour
                      * Runner:
                      * - Nothing
                      */
-
+                    Time.timeScale = 0;
                     if (players[0] != null)
                     {
                         players[0].GetComponent<PlayerController>().movSpeed = 0;//disable speed
@@ -389,6 +393,7 @@ public class Game_Manager : MonoBehaviour
                      * *NOTE* no end animation for runner
                      */
                     //AUDIO
+                    Time.timeScale = 0;
                     startScreenBGM.Pause();
                     phase1SFX.Pause();
                     phase2SFX.Pause();
